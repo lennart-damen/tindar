@@ -15,10 +15,10 @@ Done:
 - The Tindar model
 - The Tindar game
     - using OOP to solve games
+    - using OOP to generate games
 
 To do:
 - The Tindar game
-    - using OOP to generate games
     - User Interface with Dash
 - Tindar in real-life with Google Cloud Platform and Flask
     - Model API: game generation and solving
