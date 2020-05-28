@@ -1,13 +1,13 @@
 # Tindar: end-to-end Operations Research
 
-Welcome to Tindar: the new dating app for Data Scientists!
+Welcome to the Tindar project: the new fictional dating app for Data Scientists!
 In the Tindar app, Data Scientists have expressed their binary interest in each other.
-Your job is to make the Tindar community happy by pairing up as many users as possible.
+Our job is to make the Tindar community happy by pairing up as many users as possible.
 
 In this project we explore how to develop an end-to-end solution to this problem.
 There are three parts to this project:
 
-1. the Tindar model: how to find the pairing-solution that makes the community as happy as possible.
+1. the Tindar model: how to find the optimal pairing-solution?
 2. the Tindar game: can you beat the algorithm?
 3. Tindar in real-life: deployment
 
