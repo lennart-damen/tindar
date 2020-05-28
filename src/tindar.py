@@ -229,7 +229,7 @@ class Tindar:
         return obj
 
 
-class TindarFactory(Tindar):
+class TindarGenerator(Tindar):
     '''Class to generate Tindar objects randomly
     n: integer
         number of people in the model
@@ -292,10 +292,10 @@ class TindarFactory(Tindar):
 
 
 if __name__ == "__main__":
-    n = 13
-    connectedness = 10
+    n = 100
+    connectedness = 2
 
-    tindar = TindarFactory(n, connectedness)
+    tindar = TindarGenerator(n, connectedness)
 
     print(f"love_matrix:\n{tindar.love_matrix}")
 
