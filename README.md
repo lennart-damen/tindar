@@ -1,6 +1,6 @@
 # Tindar: end-to-end Operations Research
 
-Welcome to Tindar: the new dating app for Data Scientists!
+Welcome to the Tindar project: the new fictional dating app for Data Scientists!
 In the Tindar app, Data Scientists have expressed their binary interest in each other.
 Your job is to make the Tindar community happy by pairing up as many users as possible.
 
