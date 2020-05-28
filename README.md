@@ -30,14 +30,14 @@ Project Organization
     ├── LICENSE
     ├── README.md
     ├── .gitignore
-    ├── models                      <------ The BiLP models
+    ├── models                          <------ The BiLP models
     ├── notebooks
-    │   └── Tindar_model.ipynb      <------ Development of optimal Tindar solution
-    ├── requirements_model_extend   <------ Environment incl. jupyter integration and linting
-    ├── requirements_model          <------ Minimal environment for the Tindar model
+    │   └── Tindar_model.ipynb          <------ Development of optimal Tindar solution
+    ├── requirements_model_extend.txt   <------ Environment incl. jupyter integration and linting
+    ├── requirements_model.txt          <------ Minimal environment for the Tindar model
     ├── setup.py
     ├── src
-    │   ├── code_evolution          <------ Step-by-step development of sourcecode
+    │   ├── code_evolution              <------ Step-by-step development of sourcecode
     │   │── tindar.py
 
 
