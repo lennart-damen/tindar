@@ -13,6 +13,8 @@ There are three parts to this project:
 
 Done:
 - The Tindar model
+- The Tindar game
+    - using OOP to solve games
 
 To do:
 - The Tindar game

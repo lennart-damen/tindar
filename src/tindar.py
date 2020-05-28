@@ -237,5 +237,5 @@ if __name__ == "__main__":
     tindar.solve_problem()
 
     tindar.inspect_solution_status()
-    tindar.inspect_solution_obj
+    tindar.inspect_solution_obj()
     tindar.inspect_solution_vars()
