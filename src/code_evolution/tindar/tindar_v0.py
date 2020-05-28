@@ -4,6 +4,8 @@
 # converted global variables to object
 # attributes by adding self.___ where appropriate
 
+# TODO: Naming error for n>10
+
 from pulp import *
 import numpy as np
 from pathlib import Path

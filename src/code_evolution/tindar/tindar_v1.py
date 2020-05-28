@@ -4,6 +4,8 @@
 # converted global variables to object
 # attributes by adding self.___ where appropriate
 
+# TODO: Naming error for n>10
+
 from pulp import *
 import numpy as np
 from pathlib import Path
@@ -36,7 +38,8 @@ class Tindar:
                 raise ValueError("love_matrix diagonal contains nonzeros")
 
         self.x_names = [f"x_{i}{j}" for i in range(n) for j in range(n)]
-        self.x = [LpVariable(name=x_name, cat="Binary") for x_name in self.x_names]
+        self.x = [LpVariable(name=x_name, cat="Binary")
+                  for x_name in self.x_names]
         self.x_np = np.array(self.x).reshape((n, n))
 
     # Symmetry constraints: if one is paired, the other is paired

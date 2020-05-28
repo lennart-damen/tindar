@@ -35,19 +35,22 @@ class Tindar:
             if self.love_matrix[i, i] != 0:
                 raise ValueError("love_matrix diagonal contains nonzeros")
 
-        self.x_names = [f"x_{i}{j}" for i in range(n) for j in range(n)]
-        self.x = [LpVariable(name=x_name, cat="Binary") for x_name in self.x_names]
+        self.x_names = [f"x_{i}_{j}" for i in range(n) for j in range(n)]
+        self.x = [LpVariable(name=x_name, cat="Binary")
+                  for x_name in self.x_names]
         self.x_np = np.array(self.x).reshape((n, n))
 
     # Symmetry constraints: if one is paired, the other is paired
     def create_symmetry_constraints(self, inplace=True):
+        tups = [(i, j) for i in range(self.n) for j in range(i+1, self.n)]
+
         # Left-hand side
         lhs_symmetry = [
             LpAffineExpression(
-                [(self.x_np[i, j], 1), (self.x_np[j, i], -1)],
-                name=f"lhs_sym_{i}{j}"
+                [(self.x_np[tup[0], tup[1]], 1), (self.x_np[tup[1], tup[0]], -1)],
+                name=f"lhs_sym_{tup[0]}_{tup[1]}"
             )
-            for i in range(self.n) for j in range(i+1, self.n)
+            for tup in tups
         ]
 
         # Constraints
@@ -55,10 +58,10 @@ class Tindar:
             LpConstraint(
                 e=lhs_s,
                 sense=0,
-                name=f"constraint_sym_{lhs_s.name[-2:]}",
+                name=f"constraint_sym_{tups[i][0]}_{tups[i][1]}",
                 rhs=0
             )
-            for lhs_s in lhs_symmetry
+            for i, lhs_s in enumerate(lhs_symmetry)
         ]
 
         # Verification
@@ -78,10 +81,15 @@ class Tindar:
 
     # Feasibility constraints: only pairs if person likes the other
     def create_like_constraints(self, inplace=True):
+        tups = [(i, j) for i in range(self.n) for j in range(self.n)]
+
         # Left-hand side
         lhs_like = [
-            LpAffineExpression([(self.x_np[i, j], 1)], name=f"lhs_like_{i}{j}")
-            for i in range(self.n) for j in range(self.n)
+            LpAffineExpression(
+                [(self.x_np[tup[0], tup[1]], 1)],
+                name=f"lhs_like_{tup[0]}_{tup[1]}"
+            )
+            for tup in tups
         ]
 
         # Constraints
@@ -89,10 +97,10 @@ class Tindar:
             LpConstraint(
                 e=lhs_l,
                 sense=-1,
-                name=f"constraint_like_{lhs_l.name[-2:]}",
-                rhs=self.love_matrix[int(lhs_l.name[-2]), int(lhs_l.name[-1])]
+                name=f"constraint_like_{tups[i][0]}_{tups[i][1]}",
+                rhs=self.love_matrix[tups[i][0], tups[i][1]]
             )
-            for lhs_l in lhs_like
+            for i, lhs_l in enumerate(lhs_like)
         ]
 
         # Verification
@@ -154,10 +162,10 @@ class Tindar:
             LpConstraint(
                 e=lhs_s,
                 sense=-1,
-                name=f"constraint_single_{kind}_{lhs_s.name[-1]}",
+                name=f"constraint_single_{kind}_{i}",
                 rhs=1
             )
-            for lhs_s in lhs_single
+            for i, lhs_s in enumerate(lhs_single)
         ]
 
         return constraints_single
@@ -215,7 +223,7 @@ class Tindar:
         return vars_pulp
 
     def inspect_solution_obj(self, verbose=True):
-        obj = value(self.prob_pulp.objective())
+        obj = value(self.prob_pulp.objective)
         if verbose:
             print("Number of lovers connected = ", obj)
         return obj
@@ -225,24 +233,25 @@ class TindarFactory(Tindar):
     '''Class to generate Tindar objects randomly
     n: integer
         number of people in the model
-    difficulty: 1 < integer < 5
-        difficulty of the Tindar problem for humans,
+    connectedness: 1 < integer < 10
+        connectedness of the Tindar problem for humans,
         assuming more edges is more difficult
     '''
+    MIN_CONNECTEDNESS = 1
+    MAX_CONNECTEDNESS = 10
+    MIN_EDGE_PROB = 0.05
+    MAX_EDGE_PROB = 0.75
 
-    MIN_EDGE_PROB = 0.1
-    MAX_EDGE_PROB = 0.9
-
-    def __init__(self, n, difficulty):
-        self.check_init(n, difficulty)
+    def __init__(self, n, connectedness):
+        self.check_init(n, connectedness)
         self.n = n
-        self.difficulty = difficulty
+        self.connectedness = connectedness
         self.create_love_matrix()
         Tindar.__init__(self, self.love_matrix)
 
     # Input validation
-    @staticmethod
-    def check_init(n, difficulty):
+    @classmethod
+    def check_init(self, n, connectedness):
         # n
         if not isinstance(n, int):
             raise ValueError(f"TindarGenerator init error: "
@@ -251,27 +260,27 @@ class TindarFactory(Tindar):
             raise ValueError(f"TindarGenerator init error: "
                              f"n={n} < 0")
 
-        # difficulty
-        if not isinstance(difficulty, int):
+        # connectedness
+        if not isinstance(connectedness, int):
             raise ValueError(f"TindarGenerator init error: "
-                             f"type(difficulty) = {type(difficulty)}")
-        if not (1 <= difficulty <= 5):
+                             f"type(connectedness) = {type(connectedness)}")
+        if not (self.MIN_CONNECTEDNESS <= connectedness <= self.MAX_CONNECTEDNESS):
             raise ValueError(f"TindarGenerator init error: "
-                             f"difficulty={difficulty} not between 1 and 5")
+                             f"connectedness={connectedness} not between 1 and 10")
 
     @classmethod
-    def bernouilli_parameter(self, difficulty):
-        diff_scaled = (difficulty-1)/5
+    def bernouilli_parameter(self, connectedness):
+        diff_scaled = (connectedness-self.MIN_EDGE_PROB)/self.MAX_CONNECTEDNESS
         return (diff_scaled*self.MAX_EDGE_PROB) + self.MIN_EDGE_PROB
 
-    def create_love_matrix(self, n=None, difficulty=None, inplace=True):
+    def create_love_matrix(self, n=None, connectedness=None, inplace=True):
         if n is None:
             n = self.n
-        if difficulty is None:
-            difficulty = self.difficulty
+        if connectedness is None:
+            connectedness = self.connectedness
 
-        p = self.bernouilli_parameter(difficulty)
-        love_matrix = np.random.binomial(1, p, size=(n, n))
+        self.p = self.bernouilli_parameter(connectedness)
+        love_matrix = np.random.binomial(1, self.p, size=(n, n))
 
         for i in range(n):
             love_matrix[i, i] = 0
@@ -283,10 +292,10 @@ class TindarFactory(Tindar):
 
 
 if __name__ == "__main__":
-    n = 10
-    difficulty = 4
+    n = 13
+    connectedness = 10
 
-    tindar = TindarFactory(n, difficulty)
+    tindar = TindarFactory(n, connectedness)
 
     print(f"love_matrix:\n{tindar.love_matrix}")
 
@@ -294,6 +303,7 @@ if __name__ == "__main__":
     tindar.write_problem()
     tindar.solve_problem()
 
+    print(f"p: {tindar.p}")
     tindar.inspect_solution_status()
-    tindar.inspect_solution_obj
-    tindar.inspect_solution_vars()
+    tindar.inspect_solution_obj()
+    # tindar.inspect_solution_vars()
