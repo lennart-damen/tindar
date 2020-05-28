@@ -221,21 +221,79 @@ class Tindar:
         return obj
 
 
+class TindarFactory(Tindar):
+    '''Class to generate Tindar objects randomly
+    n: integer
+        number of people in the model
+    difficulty: 1 < integer < 5
+        difficulty of the Tindar problem for humans,
+        assuming more edges is more difficult
+    '''
+
+    MIN_EDGE_PROB = 0.1
+    MAX_EDGE_PROB = 0.9
+
+    def __init__(self, n, difficulty):
+        self.check_init(n, difficulty)
+        self.n = n
+        self.difficulty = difficulty
+        self.create_love_matrix()
+        Tindar.__init__(self, self.love_matrix)
+
+    # Input validation
+    @staticmethod
+    def check_init(n, difficulty):
+        # n
+        if not isinstance(n, int):
+            raise ValueError(f"TindarGenerator init error: "
+                             f"type(n) = {type(n)}")
+        if n <= 0:
+            raise ValueError(f"TindarGenerator init error: "
+                             f"n={n} < 0")
+
+        # difficulty
+        if not isinstance(difficulty, int):
+            raise ValueError(f"TindarGenerator init error: "
+                             f"type(difficulty) = {type(difficulty)}")
+        if not (1 <= difficulty <= 5):
+            raise ValueError(f"TindarGenerator init error: "
+                             f"difficulty={difficulty} not between 1 and 5")
+
+    @classmethod
+    def bernouilli_parameter(self, difficulty):
+        diff_scaled = (difficulty-1)/5
+        return (diff_scaled*self.MAX_EDGE_PROB) + self.MIN_EDGE_PROB
+
+    def create_love_matrix(self, n=None, difficulty=None, inplace=True):
+        if n is None:
+            n = self.n
+        if difficulty is None:
+            difficulty = self.difficulty
+
+        p = self.bernouilli_parameter(difficulty)
+        love_matrix = np.random.binomial(1, p, size=(n, n))
+
+        for i in range(n):
+            love_matrix[i, i] = 0
+
+        if inplace:
+            self.love_matrix = love_matrix
+        else:
+            return love_matrix
+
+
 if __name__ == "__main__":
-    love_matrix = np.array([
-        [0, 1, 1, 1],
-        [1, 0, 0, 0],
-        [1, 0, 0, 1],
-        [1, 0, 1, 0]
-    ])
+    n = 10
+    difficulty = 4
 
-    print(f"love_matrix = {love_matrix}")
+    tindar = TindarFactory(n, difficulty)
 
-    tindar = Tindar(love_matrix)
+    print(f"love_matrix:\n{tindar.love_matrix}")
+
     tindar.create_problem()
     tindar.write_problem()
     tindar.solve_problem()
 
     tindar.inspect_solution_status()
-    tindar.inspect_solution_obj()
+    tindar.inspect_solution_obj
     tindar.inspect_solution_vars()

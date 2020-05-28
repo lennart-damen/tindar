@@ -283,7 +283,6 @@ class TindarFactory(Tindar):
 
 
 if __name__ == "__main__":
-    print(PROJECT_DIR)
     n = 10
     difficulty = 4
 
