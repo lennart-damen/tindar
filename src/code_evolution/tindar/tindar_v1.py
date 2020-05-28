@@ -192,7 +192,7 @@ class Tindar:
         self.objective = LpAffineExpression([(x_i, 1) for x_i in self.x])
 
         # Create PuLP problem
-        self.prob_pulp = LpProblem("The Tindar Problem", LpMaximize)
+        self.prob_pulp = LpProblem("The_Tindar_Problem", LpMaximize)
         self.prob_pulp += self.objective
 
         for c in self.constraints_all:
@@ -218,7 +218,7 @@ class Tindar:
         return vars_pulp
 
     def inspect_solution_obj(self, verbose=True):
-        obj = value(self.prob_pulp.objective())
+        obj = value(self.prob_pulp.objective)
         if verbose:
             print("Number of lovers connected = ", obj)
         return obj

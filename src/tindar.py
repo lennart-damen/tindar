@@ -197,7 +197,7 @@ class Tindar:
         self.objective = LpAffineExpression([(x_i, 1) for x_i in self.x])
 
         # Create PuLP problem
-        self.prob_pulp = LpProblem("The Tindar Problem", LpMaximize)
+        self.prob_pulp = LpProblem("The_Tindar_Problem", LpMaximize)
         self.prob_pulp += self.objective
 
         for c in self.constraints_all:
@@ -235,7 +235,8 @@ class TindarGenerator(Tindar):
         number of people in the model
     connectedness: 1 < integer < 10
         connectedness of the Tindar problem for humans,
-        assuming more edges is more difficult
+        implemented as bernouilli probability for edges
+        to be generated
     '''
     MIN_CONNECTEDNESS = 1
     MAX_CONNECTEDNESS = 10
