@@ -22,23 +22,31 @@ class Tindar:
     '''
 
     def __init__(self, love_matrix):
+        self.check_init(love_matrix)
+
         self.love_matrix = love_matrix
-
-        m, n = love_matrix.shape
-        if m != n:
-            raise ValueError(f"love_matrix is not square: love_matrix.shape"
-                             f"= {love_matrix.shape}")
-        else:
-            self.n = n
-
-        for i in range(self.n):
-            if self.love_matrix[i, i] != 0:
-                raise ValueError("love_matrix diagonal contains nonzeros")
-
+        self.n = love_matrix.shape[0]
         self.x_names = [f"x_{i}_{j}" for i in range(n) for j in range(n)]
         self.x = [LpVariable(name=x_name, cat="Binary")
                   for x_name in self.x_names]
         self.x_np = np.array(self.x).reshape((n, n))
+
+    @staticmethod
+    def check_init(love_matrix):
+        # type check
+        if not isinstance(love_matrix, np.ndarray):
+            raise ValueError("love_matrix is not a numpy array")
+
+        # shape check
+        m, n = love_matrix.shape
+        if m != n:
+            raise ValueError(f"love_matrix is not square: love_matrix.shape"
+                             f"= {love_matrix.shape}")
+
+        # diagonal zero check
+        for i in range(n):
+            if love_matrix[i, i] != 0:
+                raise ValueError("love_matrix diagonal contains nonzeros")
 
     # Symmetry constraints: if one is paired, the other is paired
     def create_symmetry_constraints(self, inplace=True):
@@ -209,27 +217,27 @@ class Tindar:
     def solve_problem(self):
         self.prob_pulp.solve()
 
-    def inspect_solution_status(self, verbose=True):
+    def solution_status(self, verbose=True):
         stat = LpStatus[self.prob_pulp.status]
         if verbose:
             print("Status:", stat)
         return stat
 
-    def inspect_solution_vars(self, verbose=True):
+    def solution_vars(self, verbose=True):
         vars_pulp = self.prob_pulp.variables()
         if verbose:
             for v in vars_pulp:
                 print(v.name, "=", v.varValue)
         return vars_pulp
 
-    def inspect_solution_obj(self, verbose=True):
+    def solution_obj(self, verbose=True):
         obj = value(self.prob_pulp.objective)
         if verbose:
             print("Number of lovers connected = ", obj)
         return obj
 
 
-class TindarGenerator(Tindar):
+class TindarGenerator:
     '''Class to generate Tindar objects randomly
     n: integer
         number of people in the model
@@ -248,7 +256,6 @@ class TindarGenerator(Tindar):
         self.n = n
         self.connectedness = connectedness
         self.create_love_matrix()
-        Tindar.__init__(self, self.love_matrix)
 
     # Input validation
     @classmethod
@@ -294,17 +301,18 @@ class TindarGenerator(Tindar):
 
 if __name__ == "__main__":
     n = 100
-    connectedness = 2
+    connectedness = 1
 
-    tindar = TindarGenerator(n, connectedness)
+    tindar_problem = TindarGenerator(n, connectedness)
+    tindar = Tindar(tindar_problem.love_matrix)
 
     print(f"love_matrix:\n{tindar.love_matrix}")
+    print(f"p: {tindar_problem.p}")
 
     tindar.create_problem()
     tindar.write_problem()
     tindar.solve_problem()
 
-    print(f"p: {tindar.p}")
-    tindar.inspect_solution_status()
-    tindar.inspect_solution_obj()
+    tindar.solution_status()
+    tindar.solution_obj()
     # tindar.inspect_solution_vars()
