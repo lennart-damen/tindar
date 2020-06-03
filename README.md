@@ -30,6 +30,7 @@ Project Organization
     ├── LICENSE
     ├── README.md
     ├── .gitignore
+    ├── documentation                   <------ Eplanatory text documents
     ├── models                          <------ The BiLP models
     ├── notebooks
     │   └── Tindar_model.ipynb          <------ Development of optimal Tindar solution
