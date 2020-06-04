@@ -252,9 +252,6 @@ class Tindar:
                     j = i + 1
 
                     while not done:
-                        if j == self.n:
-                            break
-
                         mutual_interest = (
                             (self.love_matrix[i, j] == 1) and
                             (self.love_matrix[j, i] == 1)
@@ -264,6 +261,9 @@ class Tindar:
                         if mutual_interest and available:
                             self.x_heuristic_np[i, j] = 1
                             self.x_heuristic_np[j, i] = 1
+                            done = True
+
+                        if j == self.n - 1:
                             done = True
                         else:
                             j += 1
@@ -347,7 +347,7 @@ class TindarGenerator:
                              f"n={n} < 0")
 
         # connectedness
-        if not isinstance(connectedness, int):
+        if not isinstance(connectedness, (int, float)):
             raise ValueError(f"TindarGenerator init error: "
                              f"type(connectedness) = {type(connectedness)}")
         if not (self.MIN_CONNECTEDNESS <= connectedness <= self.MAX_CONNECTEDNESS):
@@ -397,10 +397,10 @@ if __name__ == "__main__":
     ]
 
     for tindar in tindars:
-        print("==========================================")
+        print("====================================================")
         print(f"love_matrix.shape:{tindar.love_matrix.shape}")
 
-        print("------------------------------------------")
+        print("----------------------------------------------------")
         print("PULP SOLUTION")
 
         tindar.create_problem()
@@ -409,7 +409,7 @@ if __name__ == "__main__":
         tindar.solution_status()
         tindar.solution_obj()
 
-        print("------------------------------------------")
+        print("----------------------------------------------------")
         print("HEURISTIC SOLUTION")
 
         with Timer():

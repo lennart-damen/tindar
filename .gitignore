@@ -97,3 +97,6 @@ target/
 
 # Models
 *.lp
+
+# Tempfiles that pulp creates while solving
+*.mps
