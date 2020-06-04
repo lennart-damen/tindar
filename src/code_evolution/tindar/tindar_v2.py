@@ -1,15 +1,9 @@
-# Tindar class version 0:
-# copied the jupyter notebook
-# grouped cells into functions
-# converted global variables to object
-# attributes by adding self.___ where appropriate
+# Tindar class version 2:
+# Added heuristic solver
 
 from pulp import *
 import numpy as np
 from pathlib import Path
-# import functools
-# import time
-from timer import Timer
 
 PROJECT_DIR = str(Path(__file__).resolve().parents[1])
 
@@ -225,26 +219,20 @@ class Tindar:
             self.x_heuristic_np = np.zeros((self.n, self.n))
 
             for i in range(self.n - 1):
-                if self.x_heuristic_np[i, :].sum() == 0:
-                    done = False
-                    j = i + 1
+                done = False
+                j = i + 1
 
-                    while not done:
-                        if j == self.n:
-                            break
+                while not done:
+                    if j == self.n - 1:
+                        done = True
 
-                        mutual_interest = (
-                            (self.love_matrix[i, j] == 1) and
-                            (self.love_matrix[j, i] == 1)
-                        )
-                        available = (self.x_heuristic_np[j, :] == 0).all()
-
-                        if mutual_interest and available:
-                            self.x_heuristic_np[i, j] = 1
-                            self.x_heuristic_np[j, i] = 1
-                            done = True
-                        else:
-                            j += 1
+                    if ((self.love_matrix[i, j] == 1) and
+                        (self.love_matrix[j, i] == 1)):
+                        self.x_heuristic_np[i, j] = 1
+                        self.x_heuristic_np[j, i] = 1
+                        done = True
+                    else:
+                        j += 1
 
         else:
             raise ValueError(
@@ -351,18 +339,6 @@ class TindarGenerator:
             return love_matrix
 
 
-# def timer(func):
-#     @functools.wraps(func)
-#     def wrapper_timer(*args, **kwargs):
-#         tic = time.perf_counter()
-#         value = func(*args, **kwargs)
-#         toc = time.perf_counter()
-#         elapsed_time = toc - tic
-#         print(f"Elapsed time: {elapsed_time:0.4f} seconds")
-#         return value
-#     return wrapper_timer
-
-
 if __name__ == "__main__":
     n = 100
     connectedness = 1
@@ -373,26 +349,11 @@ if __name__ == "__main__":
     print(f"love_matrix:\n{tindar.love_matrix}")
     print(f"p: {tindar_problem.p}")
 
-    print("------------------------------------------")
-    print("PULP SOLUTION")
+    # tindar.create_problem()
+    # tindar.write_problem()
+    # tindar.solve_problem()
+    tindar.solve_problem(kind="heuristic")
 
-    tindar.create_problem()
-    with Timer():
-        tindar.solve_problem()
-    tindar.solution_status()
-    tindar.solution_obj()
-
-    print("------------------------------------------")
-    print("HEURISTIC SOLUTION")
-
-    with Timer():
-        tindar.solve_problem(kind="heuristic")
     tindar.solution_status(kind="heuristic")
     tindar.solution_obj(kind="heuristic")
-    solution_heur = tindar.solution_vars(kind="heuristic")
-
-    assert (solution_heur.sum(axis=1) <= 1).all()
-    assert (solution_heur.sum(axis=0) <= 1).all()
-    for i in range(n):
-        for j in range(i+1, n):
-            assert solution_heur[i, j] == solution_heur[i, j]
+    # tindar.solution_vars()
