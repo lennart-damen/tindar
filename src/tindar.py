@@ -29,10 +29,11 @@ class Tindar:
 
         self.love_matrix = love_matrix
         self.n = love_matrix.shape[0]
-        self.x_names = [f"x_{i}_{j}" for i in range(n) for j in range(n)]
+        self.x_names = [f"x_{i}_{j}" for i in range(self.n)
+                        for j in range(self.n)]
         self.x = [LpVariable(name=x_name, cat="Binary")
                   for x_name in self.x_names]
-        self.x_np = np.array(self.x).reshape((n, n))
+        self.x_np = np.array(self.x).reshape((self.n, self.n))
 
     @staticmethod
     def check_init(love_matrix):
