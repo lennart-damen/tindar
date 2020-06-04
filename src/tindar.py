@@ -35,6 +35,9 @@ class Tindar:
                   for x_name in self.x_names]
         self.x_np = np.array(self.x).reshape((self.n, self.n))
 
+    # def __repr__(self):
+    #     return f"Tindar with "
+
     @staticmethod
     def check_init(love_matrix):
         # type check
@@ -352,48 +355,44 @@ class TindarGenerator:
             return love_matrix
 
 
-# def timer(func):
-#     @functools.wraps(func)
-#     def wrapper_timer(*args, **kwargs):
-#         tic = time.perf_counter()
-#         value = func(*args, **kwargs)
-#         toc = time.perf_counter()
-#         elapsed_time = toc - tic
-#         print(f"Elapsed time: {elapsed_time:0.4f} seconds")
-#         return value
-#     return wrapper_timer
-
-
 if __name__ == "__main__":
-    n = 100
-    connectedness = 1
+    n_list = [10, 30, 100, 1000]
+    connectedness_list = [1, 3, 8]
 
-    tindar_problem = TindarGenerator(n, connectedness)
-    tindar = Tindar(tindar_problem.love_matrix)
+    tindar_problems = [
+        TindarGenerator(tup[0], tup[1])
+        for tup in zip(n_list, connectedness_list)
+    ]
 
-    print(f"love_matrix:\n{tindar.love_matrix}")
-    print(f"p: {tindar_problem.p}")
+    tindars = [
+        Tindar(tindar_problem.love_matrix)
+        for tindar_problem in tindar_problems
+    ]
 
-    print("------------------------------------------")
-    print("PULP SOLUTION")
+    for tindar in tindars:
+        print("==========================================")
+        print(f"love_matrix:\n{tindar.love_matrix}")
 
-    tindar.create_problem()
-    with Timer():
-        tindar.solve_problem()
-    tindar.solution_status()
-    tindar.solution_obj()
+        print("------------------------------------------")
+        print("PULP SOLUTION")
 
-    print("------------------------------------------")
-    print("HEURISTIC SOLUTION")
+        tindar.create_problem()
+        with Timer():
+            tindar.solve_problem()
+        tindar.solution_status()
+        tindar.solution_obj()
 
-    with Timer():
-        tindar.solve_problem(kind="heuristic")
-    tindar.solution_status(kind="heuristic")
-    tindar.solution_obj(kind="heuristic")
-    solution_heur = tindar.solution_vars(kind="heuristic")
+        print("------------------------------------------")
+        print("HEURISTIC SOLUTION")
 
-    assert (solution_heur.sum(axis=1) <= 1).all()
-    assert (solution_heur.sum(axis=0) <= 1).all()
-    for i in range(n):
-        for j in range(i+1, n):
-            assert solution_heur[i, j] == solution_heur[i, j]
+        with Timer():
+            tindar.solve_problem(kind="heuristic")
+        tindar.solution_status(kind="heuristic")
+        tindar.solution_obj(kind="heuristic")
+        solution_heur = tindar.solution_vars(kind="heuristic")
+
+        assert (solution_heur.sum(axis=1) <= 1).all()
+        assert (solution_heur.sum(axis=0) <= 1).all()
+        for i in range(n):
+            for j in range(i+1, n):
+                assert solution_heur[i, j] == solution_heur[i, j]
