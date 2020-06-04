@@ -1,8 +1,9 @@
-# Tindar class version 0:
-# copied the jupyter notebook
-# grouped cells into functions
-# converted global variables to object
-# attributes by adding self.___ where appropriate
+# Tindar class version 3:
+# Add __repr__ methods
+# allow Tindar to be initialised with TindarGenerator objects
+# so that it can copy the connectedness and p parameters
+# change main script to test many instances
+# Fix minor bugs
 
 from pulp import *
 import numpy as np
@@ -10,6 +11,7 @@ from pathlib import Path
 # import functools
 # import time
 from timer import Timer
+import itertools
 
 PROJECT_DIR = str(Path(__file__).resolve().parents[1])
 
@@ -22,21 +24,37 @@ class Tindar:
     love_matrix: np.array
         square matrix indicating which person is interested
         in which other person
+    tindar_problem: instance of TindarGenerator
     '''
 
-    def __init__(self, love_matrix):
-        self.check_init(love_matrix)
+    INIT_ERROR_MSG = "Cannot initialise with love_matrix AND tindar_problem"
 
-        self.love_matrix = love_matrix
-        self.n = love_matrix.shape[0]
+    def __init__(self, love_matrix=None, tindar_problem=None):
+        if love_matrix is not None:
+            assert tindar_problem is None, INIT_ERROR_MSG
+            self.check_init(love_matrix)
+            self.love_matrix = love_matrix
+            self.n = love_matrix.shape[0]
+
+        if tindar_problem is not None:
+            assert love_matrix is None, INIT_ERROR_MSG
+            self.tindar_problem = tindar_problem
+            self.love_matrix = tindar_problem.love_matrix
+            self.n = tindar_problem.n
+            self.connectedness = tindar_problem.connectedness
+            self.p = tindar_problem.p
+
         self.x_names = [f"x_{i}_{j}" for i in range(self.n)
                         for j in range(self.n)]
         self.x = [LpVariable(name=x_name, cat="Binary")
                   for x_name in self.x_names]
         self.x_np = np.array(self.x).reshape((self.n, self.n))
 
-    # def __repr__(self):
-    #     return f"Tindar with "
+    def __repr__(self):
+        if self.tindar_problem is None:
+            return f"Tindar with n={self.n}"
+        else:
+            return str(self.tindar_problem.__repr__())
 
     @staticmethod
     def check_init(love_matrix):
@@ -313,6 +331,10 @@ class TindarGenerator:
         self.connectedness = connectedness
         self.create_love_matrix()
 
+    def __repr__(self):
+        return (f"Tindar problem with n={self.n}, connectedness= "
+                f"{self.connectedness}, p={self.p}")
+
     # Input validation
     @classmethod
     def check_init(self, n, connectedness):
@@ -356,12 +378,17 @@ class TindarGenerator:
 
 
 if __name__ == "__main__":
-    n_list = [10, 30, 100, 1000]
+    n_list = [10, 30, 100, 200, 300]
     connectedness_list = [1, 3, 8]
 
+    parameters = tuple(itertools.product(n_list, connectedness_list))
+    print("Running Tindar problems with the following paramters:")
+    for p in parameters:
+        print(f"n: {p[0]}, connectedness: {p[1]}")
+
     tindar_problems = [
-        TindarGenerator(tup[0], tup[1])
-        for tup in zip(n_list, connectedness_list)
+        TindarGenerator(p[0], p[1])
+        for p in parameters
     ]
 
     tindars = [
@@ -371,7 +398,7 @@ if __name__ == "__main__":
 
     for tindar in tindars:
         print("==========================================")
-        print(f"love_matrix:\n{tindar.love_matrix}")
+        print(f"love_matrix.shape:{tindar.love_matrix.shape}")
 
         print("------------------------------------------")
         print("PULP SOLUTION")
@@ -389,10 +416,3 @@ if __name__ == "__main__":
             tindar.solve_problem(kind="heuristic")
         tindar.solution_status(kind="heuristic")
         tindar.solution_obj(kind="heuristic")
-        solution_heur = tindar.solution_vars(kind="heuristic")
-
-        assert (solution_heur.sum(axis=1) <= 1).all()
-        assert (solution_heur.sum(axis=0) <= 1).all()
-        for i in range(n):
-            for j in range(i+1, n):
-                assert solution_heur[i, j] == solution_heur[i, j]
