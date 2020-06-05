@@ -49,6 +49,7 @@ To do:
     ├── LICENSE
     ├── README.md
     ├── .gitignore
+    ├── code_evolution                  <------ Step-by-step development of sourcecode
     ├── documentation                   <------ Eplanatory text documents
     ├── models                          <------ The BiLP models
     ├── notebooks
@@ -57,7 +58,6 @@ To do:
     ├── requirements_model.txt          <------ Minimal environment for the Tindar model
     ├── setup.py
     ├── src
-    │   ├── code_evolution              <------ Step-by-step development of sourcecode
     │   │── tindar.py
     ├── tests                           <------ Testing sourcecode with pytest
 
