@@ -281,13 +281,24 @@ class Tindar:
                 "choose from: pulp, heuristic"
             )
 
+    def _pulp_solution_to_np(self, pulp_vars=None):
+        if pulp_vars is None:
+            pulp_vars = self.prob_pulp.variables()
+
+        solution_np = np.array(
+            [v.value() for v in pulp_vars]
+        ).reshape((self.n, self.n))
+
+        return solution_np
+
     def solution_vars(self, kind="pulp", verbose=True):
         if kind == "pulp":
             vars_pulp = self.prob_pulp.variables()
             if verbose:
                 for v in vars_pulp:
                     print(v.name, "=", v.varValue)
-            return vars_pulp
+            return self._pulp_solution_to_np(vars_pulp)
+
         elif kind == "heuristic":
             if verbose:
                 print(self.x_heuristic_np)
