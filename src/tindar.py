@@ -3,7 +3,7 @@
 from pulp import *
 import numpy as np
 from pathlib import Path
-from timer import Timer
+from custom_timer import Timer
 import itertools
 
 PROJECT_DIR = str(Path(__file__).resolve().parents[1])

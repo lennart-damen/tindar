@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="tindar-engine",
-    version="1.1.2",
+    version="1.1.3",
     author="Lennart Damen",
     author_email="lennartdmn@gmail.com",
     description="Create and solve Tindar problems",
@@ -13,6 +13,10 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/lennart-damen/tindar",
     packages=setuptools.find_packages(),
+    install_requires=[
+        'numpy',
+        'pulp'
+    ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
