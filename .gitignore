@@ -81,6 +81,7 @@ target/
 
 # exclude the python environment
 /env
+/env_simple
 
 # exclude the keys folder
 /keys/
