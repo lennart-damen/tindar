@@ -3,10 +3,10 @@
 Welcome to the Tindar project: the optimal matchmaker!
 
 ## Introduction
-The main purpose of this project is to share my knowledge on how to build
-an end-to-end data product, both for myself to let some concepts sink in
-and for others to give feedback on my working style (possibly pick up some concepts
-if they were not yet familiar).
+The main purpose of this project is to build and share knowledge on how to develop
+an end-to-end data product. This personally helps me to let some concepts sink in
+and is a gateway for others to give feedback on my working style (and possibly pick up
+some concepts if they were not yet familiar).
 
 I love working on Data Science, Machine Learning, and Operations Research problems,
 but I also see around me that many projects never really lift off. I use the Tindar project
@@ -30,7 +30,7 @@ The Tindar project consists of three components:
 3. the Tindar game: interactive game to show users the power of Operations Research (TODO: href here)
 
 Done:
-- The mathematical Tindar model
+- The mathematical Tindar model (see documentation)
 - The Tindar engine
     - using OOP to solve games with PuLP and heuristic
     - using OOP to generate games
@@ -42,6 +42,9 @@ To do:
 - The Tindar game
     - Build user Interface with Dash
     - Deploy to Cloud Platform
+- Documentation
+    - update heuristic description
+    - compute and report results of tindar experiments
 
 ## Project Organization
 ------------
@@ -59,6 +62,7 @@ To do:
     ├── setup.py
     ├── src
     │   │── tindar.py
+    │   │── custom_timer.py
     ├── tests                           <------ Testing sourcecode with pytest
 
 
