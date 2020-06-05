@@ -1,4 +1,9 @@
-# tindar.py
+# Tindar class version 3:
+# Add __repr__ methods
+# allow Tindar to be initialised with TindarGenerator objects
+# so that it can copy the connectedness and p parameters
+# change main script to test many instances
+# Fix minor bugs
 
 from pulp import *
 import numpy as np
@@ -385,7 +390,7 @@ if __name__ == "__main__":
     ]
 
     tindars = [
-        Tindar(tindar_problem=tindar_problem)
+        Tindar(tindar_problem.love_matrix)
         for tindar_problem in tindar_problems
     ]
 

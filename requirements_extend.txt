@@ -1,3 +1,5 @@
+atomicwrites==1.4.0
+attrs==19.3.0
 backcall==0.1.0
 colorama==0.4.3
 decorator==4.4.2
@@ -10,15 +12,20 @@ jedi==0.17.0
 jupyter-client==6.1.3
 jupyter-core==4.6.3
 mccabe==0.6.1
+more-itertools==8.3.0
 numpy==1.18.4
+packaging==20.4
 parso==0.7.0
 pickleshare==0.7.5
+pluggy==0.13.1
 prompt-toolkit==3.0.5
 PuLP==2.1
+py==1.8.1
 pycodestyle==2.6.0
 pyflakes==2.2.0
 Pygments==2.6.1
 pyparsing==2.4.7
+pytest==5.4.3
 python-dateutil==2.8.1
 pywin32==227
 pyzmq==19.0.1
