@@ -8,7 +8,7 @@ setuptools.setup(
     version="1.0",
     author="Lennart Damen",
     author_email="lennartdmn@gmail.com",
-    description="Learn end-to-end Operations Research: from binary optimisation problem to cloud application",
+    description="Create and solve Tindar problems",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/lennart-damen/tindar,
@@ -18,5 +18,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='=3.7',
+    python_requires='>=3.6',
 )

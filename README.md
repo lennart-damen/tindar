@@ -40,6 +40,8 @@ Project Organization
     ├── src
     │   ├── code_evolution              <------ Step-by-step development of sourcecode
     │   │── tindar.py
+    ├── tests                           <------ Testing sourcecode with pytest
+
 
 
 
