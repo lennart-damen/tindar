@@ -27,8 +27,6 @@ def api_home():
 def generate_tindar_problem():
     args = request.args
 
-    print(args)
-
     if not args:  # query string is empty
         # TODO
         return "EXPLANATION HOW TO GENERATE TINDAR PROBLEMS HERE", 200
@@ -80,9 +78,6 @@ def solve_tindar_problem():
             # Parse parameters from JSON
             param_count = 0
             for k, v in req.items():
-                print(k)
-                print(v)
-
                 if k == "love_matrix":
                     try:
                         love_matrix_np = np.array(v)
@@ -92,7 +87,6 @@ def solve_tindar_problem():
 
                 elif k == "solver":
                     solver = v
-                    print(f"solver {solver}")
                     if solver not in ["pulp", "heuristic"]:
                         return f"Solver {solver} not allowed. Choose 'pulp', 'heuristic'", 400
                     else:
@@ -116,11 +110,7 @@ def solve_tindar_problem():
             tindar.solve_problem(kind=solver)
             obj = tindar.solution_obj(kind=solver, verbose=False)
 
-            if solver == "heuristic":
-                sol = tindar.solution_vars(kind=solver, verbose=False).astype(int).tolist()
-            else:
-                # TODO: "JSON return for pulp not implemented yet"
-                sol = str(tindar.solution_vars(kind=solver, verbose=False))
+            sol = tindar.solution_vars(kind=solver, verbose=False).astype(int).tolist()
 
             return jsonify({
                 "people_paired": obj,
