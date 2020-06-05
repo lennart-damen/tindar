@@ -84,7 +84,7 @@ target/
 /env_simple
 
 # extended environment description
-requirements_extend.txt
+/requirements_extend.txt
 
 # exclude the keys folder
 /keys/
