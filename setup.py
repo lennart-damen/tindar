@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="tindar-engine",
-    version="1.0",
+    version="1.1.1",
     author="Lennart Damen",
     author_email="lennartdmn@gmail.com",
     description="Create and solve Tindar problems",

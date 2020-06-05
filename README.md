@@ -63,8 +63,17 @@ To do:
 
 
 ## Installation
-I would recommend to isolate the dependencies of this project in a virtual environment with [venv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/) or [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). After activating the environment, you can install the Tindar engine with:
+I would recommend to isolate the dependencies of this project in a virtual environment with [venv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/) or [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). After activating the environment, you can install the Tindar engine from test.pypi:
 
+```
+pip install -i https://test.pypi.org/simple/ tindar-engine
+```
 
+Also make sure to install the additional dependencies listed in this repository. Download requirements.txt and:
+```
+pip install -r requirements.txt
+```
 
-  
+This package is just experimental, and I prefer to keep my project structure as defined above. To use the package, start an interpreter. Then, you can use the package like so:
+
+from src import tindar
