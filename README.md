@@ -1,30 +1,49 @@
 # Tindar: end-to-end Operations Research
 
-Welcome to the Tindar project: the new fictional dating app for Data Scientists!
-In the Tindar app, Data Scientists have expressed their binary interest in each other.
-Our job is to make the Tindar community happy by pairing up as many users as possible.
+Welcome to the Tindar project: the optimal matchmaker!
 
-In this project we explore how to develop an end-to-end solution to this problem.
-There are three parts to this project:
+## Introduction
+The main purpose of this project is to share my knowledge on how to build
+an end-to-end data product, both for myself to let some concepts sink in
+and for others to give feedback on my working style (possibly pick up some concepts
+if they were not yet familiar).
 
-1. the Tindar model: how to find the optimal pairing-solution?
-2. the Tindar game: can you beat the algorithm?
-3. Tindar in real-life: deployment
+I love working on Data Science, Machine Learning, and Operations Research problems,
+but I also see around me that many projects never really lift off. I use the Tindar project
+to prove to myself and others that the technical aspect should not be the
+limiting factor.
+
+## Tindar challenge
+Suppose you owned a dating company. Once every week, people come to your venue to find their
+ideal partner. During the speed-dating round, every person expresses if he/she would like
+to meet his/her date in real-life in the next week. Your people have busy schedules,
+so they can only go on a real date with a single person.
+
+Your job is to make your community as happy as possible by pairing up as many users as
+you can.
+
+## Tindar components
+The Tindar project consists of three components:
+
+1. the Tindar engine: generate and solve tindar problems (this repo)
+2. the Tindar API: interact with the Tindar engine (TODO: href here)
+3. the Tindar game: interactive game to show users the power of Operations Research (TODO: href here)
 
 Done:
-- The Tindar model
-- The Tindar game
-    - using OOP to solve games
+- The mathematical Tindar model
+- The Tindar engine
+    - using OOP to solve games with PuLP and heuristic
     - using OOP to generate games
 
 To do:
+- The Tindar API:
+    - build Flask app
+    - deploy to AWS Lambda/GCP functions
 - The Tindar game
-    - User Interface with Dash
-- Tindar in real-life with Google Cloud Platform and Flask
-    - Model API: game generation and solving
-    - User Interface deployed
+    - Build user Interface with Dash
+    - Deploy to Cloud Platform
 
-Project Organization
+## Project Organization
 ------------
 
     ├── LICENSE
@@ -43,7 +62,8 @@ Project Organization
     ├── tests                           <------ Testing sourcecode with pytest
 
 
-
+## Installation
+I would recommend to isolate the dependencies of this project in a virtual environment with [venv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/) or [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). After activating the environment, you can install the Tindar engine with:
 
 
 
