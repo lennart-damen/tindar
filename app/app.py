@@ -4,7 +4,7 @@ from flask import Flask, request, jsonify
 import numpy as np
 
 PROJECT_DIR = str(Path(__file__).resolve().parents[1])
-sys.path.insert(1, PROJECT_DIR+"/src")
+sys.path.insert(1, PROJECT_DIR+"/tindar-engine")
 
 from tindar import Tindar, TindarGenerator
 
@@ -109,7 +109,6 @@ def solve_tindar_problem():
 
             tindar.solve_problem(kind=solver)
             obj = tindar.solution_obj(kind=solver, verbose=False)
-
             sol = tindar.solution_vars(kind=solver, verbose=False).astype(int).tolist()
 
             return jsonify({

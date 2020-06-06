@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Index</title>
+</head>
+
+<body>
+  <h1>Welcome to Tindar: the optimal matchmaker!</h1>
+  <div style="display: inline-block; width: 25%; border: solid; padding: 2%; border: solid; vertical-align:top">
+    <h2>Introduction</h2>
+    <p>
+        I love working on Data Science, Machine Learning, and Operations Research problems,
+        but I also see around me that many projects never really lift off. I use the Tindar project
+        to prove to myself and others that the technical aspect should not be the limiting factor.
+        I use this projects for myself to practice my end-to-end skills and share my findings with, well,
+        anyone really. Especially anyone who is interested in Operations Research, API's and Serverless
+        Technology :).<br><br>
+
+        This is a Flask web application running on AWS lambda connected to the internet through
+        AWS API Gateway. Take a look at <a href="https://github.com/lennart-damen/tindar">this Github repository</a>
+        for the source code and other documentation.<br><br>
+
+        Feel free to <a href="https://www.linkedin.com/in/lennart-damen/">connect</a>, I would love to hear
+        your feedback!
+    </p>
+  </div>
+
+  <div style="display: inline-block; width: 25%; border: solid; padding: 2%; border: solid; vertical-align:top">
+      <h2>the Tindar Challenge</h2>
+      <h3>Challenge</h3>
+      <p>
+        Suppose you owned a dating company. Once every week, people come to your venue to find their
+        ideal partner. During the speed-dating round, every person expresses if he/she would like
+        to meet his/her date in real-life in the next week. Your people have busy schedules,
+        so they can only go on a real date with a single person.<br><br>
+        
+        Your job is to make your community as happy as possible by pairing up as many users as you can.
+      </p>
+
+      <h3>Solution</h3>
+      <p>
+          As explained in the <a href="https://github.com/lennart-damen/tindar/tree/master/documentation">Github documentation</a>,
+          the Tindar community can be represented as a graph with the people as nodes and the edges for interest.
+          This problem is then readily defined as a Binary Linear Problem, which can theoretically be solved with algorithms such as
+          Branch and Bound. In practice, we use the <a href="https://coin-or.github.io/pulp/">Pulp library</a>
+          which does the optimisation for us.
+      </p>
+  </div>
+
+  <div style="display: inline-block; width: 25%; border: solid; padding: 2%; border: solid; vertical-align:top">
+    <h2>Web Components</h2>
+    <p>
+        Apart from this homepage, you can visit:
+        <ul>
+            <li>.../api<br>for explanation on how to generate and solve Tindar problems</li><br>
+            <li> 
+                .../api/generate<br>by making a GET request with a query string.<br>
+                You will receive a JSON file back with a randomly generated problem
+                and some extra parameters
+            </li><br>
+            <li>
+                .../api/solve<br>by making a JSON POST request. You will receive a JSON file back with
+                the solution to the Tindar problem that you posted.
+            </li>
+        </ul>
+    </p>
+  </div>
+
+
+</body>
+
+</html>
