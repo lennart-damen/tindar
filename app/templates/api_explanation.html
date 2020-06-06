@@ -36,8 +36,7 @@
         a Bernouilli distribution<br><br>
 
         You can generate a Tindar problem by making a GET request to /api/generate with parameters as querystring,
-        like so:<br>
-        .../api/generate?n=20&connectedness=4<br><br>
+        like so: <br><br> .../api/generate?n=20&connectedness=4<br><br>
 
         You can control the number of people by the parameter "n" (integer) and the number of ones with
         "connectedness" (float between 1 and 10).<br><br>
@@ -61,7 +60,8 @@
   <div style="display: inline-block; width: 25%; padding: 2%; vertical-align:top; border:solid">
     <h2>Solve Tindar problems</h2>
     <p>
-        You can solve a Tindar problem by making a POST request with your Tindar problem as JSON.
+        You can solve a Tindar problem by making a POST request with your Tindar problem as JSON.<br><br>
+        
         For the solution method, choose between "pulp" (which uses the BiLP formulation and solves
         to optimality) and "heuristic" (a faster heuristic which I use a baseline performance
         comparison). The JSON file should have these two keys, like so:<br>

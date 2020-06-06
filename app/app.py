@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import numpy as np
 
 PROJECT_DIR = str(Path(__file__).resolve().parents[1])
@@ -14,13 +14,12 @@ app = Flask(__name__)
 @app.route('/', methods=["GET"])
 def index():
     # TODO
-    return "WELCOME TO TINDAR", 200
+    return render_template("index.html"), 200
 
 
 @app.route('/api', methods=["GET"])
 def api_home():
-    # TODO
-    return "API EXPLANATION", 200
+    return render_template("api_explanation.html"), 200
 
 
 @app.route('/api/generate', methods=["GET"])
@@ -28,8 +27,7 @@ def generate_tindar_problem():
     args = request.args
 
     if not args:  # query string is empty
-        # TODO
-        return "EXPLANATION HOW TO GENERATE TINDAR PROBLEMS HERE", 200
+        return render_template("api_explanation.html"), 200
 
     param_count = 0
     for k, v in args.items():
@@ -65,11 +63,11 @@ def generate_tindar_problem():
     return jsonify(rv), 200
 
 
-@app.route("/api/solve", methods=["POST"])
+@app.route("/api/solve", methods=["GET", "POST"])
 def solve_tindar_problem():
     if request.method == "GET":
         # TODO: EXPLAIN HOW TO INTERACT
-        return "EXPLANATION HOW TO INTERACT HERE"
+        return render_template("api_explanation.html")
 
     elif request.method == "POST":
         if request.is_json:
