@@ -104,3 +104,6 @@ target/
 
 # Tempfiles that pulp creates while solving
 *.mps
+
+# cloud zip
+*.zip
