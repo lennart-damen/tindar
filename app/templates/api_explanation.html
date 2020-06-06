@@ -35,11 +35,10 @@
         Because we do not really own a Tindar company with Tindar data, we will generate it randomly using
         a Bernouilli distribution<br><br>
 
-        You can generate a Tindar problem by making a GET request to /api/generate with parameters as querystring,
-        like so: <br><br> .../api/generate?n=20&connectedness=4<br><br>
-
-        You can control the number of people by the parameter "n" (integer) and the number of ones with
-        "connectedness" (float between 1 and 10).<br><br>
+        You can generate a Tindar problem by making a GET request to /api/generate with parameters as querystring.
+        Control the amount of people with "n" (integer) and the probability of interest with "connectedness" (float between 
+        1 and 10), like so:
+        <br><br> .../api/generate?n=20&connectedness=4<br><br>
         
         You will then receive back a JSON file, similar to:<br>
         {

@@ -16,16 +16,18 @@
         I love working on Data Science, Machine Learning, and Operations Research problems,
         but I also see around me that many projects never really lift off. I use the Tindar project
         to prove to myself and others that the technical aspect should not be the limiting factor.
-        I use this projects for myself to practice my end-to-end skills and share my findings with, well,
-        anyone really. Especially anyone who is interested in Operations Research, API's and Serverless
+        I use this projects to practice my end-to-end skills and share my findings with, well,
+        anyone really. Especially anyone who is interested in Operations Research, API's, and Serverless
         Technology :).<br><br>
 
-        This is a Flask web application running on AWS lambda connected to the internet through
+        This is a Flask web application running on AWS Lambda connected to the internet through
         AWS API Gateway. Take a look at <a href="https://github.com/lennart-damen/tindar">this Github repository</a>
         for the source code and other documentation.<br><br>
 
         Feel free to <a href="https://www.linkedin.com/in/lennart-damen/">connect</a>, I would love to hear
-        your feedback!
+        your feedback!<br><br>
+
+        P.S.: These webpages are purely functional. Please forgive the plain HTML's, it's not their fault that they're ugly.
     </p>
   </div>
 
@@ -46,8 +48,8 @@
           As explained in the <a href="https://github.com/lennart-damen/tindar/tree/master/documentation">Github documentation</a>,
           the Tindar community can be represented as a graph with the people as nodes and the edges for interest.
           This problem is then readily defined as a Binary Linear Problem, which can theoretically be solved with algorithms such as
-          Branch and Bound. In practice, we use the <a href="https://coin-or.github.io/pulp/">Pulp library</a>
-          which does the optimisation for us.
+          Branch and Bound. In practice, we use the <a href="https://coin-or.github.io/pulp/">PuLP library</a>
+          which does the optimisation for us. I have also developed a heuristic as a baseline to compare PuLP against.
       </p>
   </div>
 
@@ -60,11 +62,13 @@
             <li> 
                 .../api/generate<br>by making a GET request with a query string.<br>
                 You will receive a JSON file back with a randomly generated problem
-                and some extra parameters
+                and some extra parameters. If you make a simple GET request, you will receive
+                the same HTML as .../api.
             </li><br>
             <li>
                 .../api/solve<br>by making a JSON POST request. You will receive a JSON file back with
-                the solution to the Tindar problem that you posted.
+                the solution to the Tindar problem that you posted. If you make a simple GET request, you will receive
+                the same HTML as .../api.
             </li>
         </ul>
     </p>
