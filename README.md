@@ -103,3 +103,7 @@ from src.tindar import Tindar
 TO DO:
 - code above does not work, get error: from timer import Timer -> ModuleNotFoundError: No module named 'timer'
 - Tindar.write_problem() default path will not work in the PyPi distribution
+
+## Far Future
+CI/CD with Github/Gitlab and GCP Cloud Build?
+Full web app with database, log-in, ...?
