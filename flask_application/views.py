@@ -1,4 +1,4 @@
-from app import app
+from flask_application import app
 
 import sys
 from pathlib import Path
