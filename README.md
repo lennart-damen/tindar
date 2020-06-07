@@ -51,20 +51,26 @@ To do:
 ## Project Organization
 ------------
 
-    ├── LICENSE
-    ├── README.md
+    ├── .gcloudignore                   <------ Specifies build context for GCP cloud build
     ├── .gitignore
-    ├── code_evolution                  <------ Step-by-step development of sourcecode
+    ├── code_evolution                  <------ Step-by-step development of Tindar sourcecode
     ├── cloudbuild.yml                  <------ To build and push Docker image to GCP container registry
     ├── Dockerfile
     ├── documentation                   <------ Eplanatory text documents
+    ├── flask_application               <------ The self-documented Tindar web application
+    │   ├── templates                   <------ Folder with HTML
+    │   ├── __init__.py                 <------ HTML
+    │   └── views.py                    <------ Routes
+    ├── LICENSE
     ├── models                          <------ The BiLP models
     ├── notebooks
     │   └── Tindar_model.ipynb          <------ Development of optimal Tindar solution
+    ├── README.md
     ├── requirements_model_extend.txt   <------ Environment incl. jupyter integration and linting
-    ├── requirements_model.txt          <------ Minimal environment for the Tindar model
+    ├── requirements_model.txt          <------ Minimal environment for the Tindar project
+    ├── run.py                          <------ Entrypoint for Flask (only for local development)
     ├── setup.py
-    ├── src
+    ├── tindar-engine                   <------ Tindar sourcecode
     │   │── tindar.py
     │   │── custom_timer.py
     ├── tests                           <------ Testing sourcecode with pytest

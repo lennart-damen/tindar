@@ -17,14 +17,14 @@
         The API allows you to do two things:
         <ul>
             <li>Generate Tindar problems</li>
-            <li>Solve tindar problems</li>
+            <li>Solve Tindar problems</li>
         </ul>
 
-        A Tindar problem is defined by a number of people and their interest
+        A Tindar problem is defined by the number of people in the community and their interest
         in each other. The graph of people and their interests is represented by a square matrix, where
         a 1 represents "interested" and a 0 "not interested" (the diagonal is filled with zeros).
         Similarly, a Tindar solution is represented by a symmetric matrix where a 1 represents "matched"
-        and a 0 "not matched"<br><br>
+        and a 0 "not matched".<br><br>
     </p>
   </div>
 
@@ -33,7 +33,7 @@
     <h2>Generate Tindar problems</h2>
     <p>
         Because we do not really own a Tindar company with Tindar data, we will generate it randomly using
-        a Bernouilli distribution<br><br>
+        a Bernouilli distribution.<br><br>
 
         You can generate a Tindar problem by making a GET request to /api/generate with parameters as querystring.
         Control the amount of people with "n" (integer) and the probability of interest with "connectedness" (float between 

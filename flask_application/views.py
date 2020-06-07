@@ -118,7 +118,3 @@ def solve_tindar_problem():
 
     else:
         return "/api/solve only accepts GET and POST requests", 400
-
-
-if __name__ == '__main__':
-    app.run(debug=False, host='localhost', port="8080", threaded=True)
