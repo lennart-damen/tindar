@@ -26,6 +26,10 @@ def api_home():
 
 @app.route('/api/generate', methods=["GET"])
 def generate_tindar_problem():
+
+    if request.method != "GET":
+        return ".../api/generate only accepts GET requests", 400
+
     args = request.args
 
     if not args:  # query string is empty
@@ -68,7 +72,6 @@ def generate_tindar_problem():
 @app.route("/api/solve", methods=["GET", "POST"])
 def solve_tindar_problem():
     if request.method == "GET":
-        # TODO: EXPLAIN HOW TO INTERACT
         return render_template("api_explanation.html")
 
     elif request.method == "POST":

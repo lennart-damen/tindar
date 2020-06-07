@@ -41,6 +41,8 @@
         so they can only go on a real date with a single person.<br><br>
         
         Your job is to make your community as happy as possible by pairing up as many users as you can.
+        You can only pair people if there is mutual interest. Tindar is monogamous: no threesomes, and
+        self-love doesn't count.
       </p>
 
       <h3>Solution</h3>
@@ -62,21 +64,22 @@
             <li> 
                 .../api/generate<br>by making a GET request with a query string.<br>
                 You will receive a JSON file back with a randomly generated Tindar problem
-                and some extra parameters. If you make a simple GET request, you will receive
-                the same HTML as .../api.
+                and some extra parameters.*
             </li><br>
             <li>
                 .../api/solve<br>by making a JSON POST request of a Tindar problem. You will receive a JSON file back with
-                the solution to the Tindar problem that you posted. If you make a simple GET request, you will receive
-                the same HTML as .../api.
-            </li>
+                the solution to the Tindar problem that you posted.*
+            </li><br>
             <li>
-              .../report, to get the Tindar report as PDF
+              .../report, make a GET request to get the Tindar report as PDF with a full explanation on the Tindar challenge,
+              the optimisation model, the PuLP and heuristic solutions, a comparison of their performance, and an overview of
+              the deployment process.
             </li>
             <!-- <li>
               .../results, a short summary of the results in your browser
             </li> -->
-        </ul>
+        </ul><br>
+        <small>*If you make a simple GET request, you will receive the same HTML as .../api.</small>
     </p>
   </div>
 
