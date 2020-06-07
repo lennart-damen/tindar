@@ -5,6 +5,8 @@ import numpy as np
 from pathlib import Path
 from custom_timer import Timer
 import itertools
+import json
+
 
 PROJECT_DIR = str(Path(__file__).resolve().parents[1])
 
@@ -294,10 +296,10 @@ class Tindar:
     def solution_vars(self, kind="pulp", verbose=True):
         if kind == "pulp":
             vars_pulp = self.prob_pulp.variables()
+            vars_np = self._pulp_solution_to_np(vars_pulp)
             if verbose:
-                for v in vars_pulp:
-                    print(v.name, "=", v.varValue)
-            return self._pulp_solution_to_np(vars_pulp)
+                print(vars_np)
+            return vars_np
 
         elif kind == "heuristic":
             if verbose:
@@ -381,42 +383,124 @@ class TindarGenerator:
             return love_matrix
 
 
-if __name__ == "__main__":
-    n_list = [10, 30, 100, 200, 300]
-    connectedness_list = [1, 3, 8]
+def tindar_solution(tindar, solver):
+    if solver == "pulp":
+        tindar.create_problem()
+    tindar.solve_problem(kind=solver)
+
+    return (
+        tindar.solution_obj(kind=solver, verbose=False),
+        tindar.solution_vars(kind=solver, verbose=False).tolist()
+    )
+
+
+def tindar_experiment(experiment_id="default_id",
+                      n_list=[10, 30, 100, 200, 300],
+                      connectedness_list=[1, 4, 8],
+                      solvers=["pulp", "heuristic"],
+                      repeat=10,
+                      result_directory=PROJECT_DIR+"/data",
+                      verbose=True):
+    '''Writes results of Tindar experiment to a json file
+
+    Parameters
+    ----------
+    experiment_id: str
+    n_list: list of ints
+        how many people in Tindar community
+    connectedness_list: list of ints or floats
+        controlling how many people are interested in each other
+    solvers: list of strings
+        pulp and/or heuristic, which solvers should be used to
+        compute results
+    repeat: int
+        number of times a combination of n - connectedness should be
+        repeated
+    result_directory: str of a path
+    verbose: str
+    '''
+
+    result_path = f"{result_directory}/results_experiment_{experiment_id}.json"
 
     parameters = tuple(itertools.product(n_list, connectedness_list))
-    print("Running Tindar problems with the following paramters:")
-    for p in parameters:
-        print(f"n: {p[0]}, connectedness: {p[1]}")
 
-    tindar_problems = [
-        TindarGenerator(p[0], p[1])
+    tindar_problems_nested = [
+        [TindarGenerator(p[0], p[1]) for _ in range(repeat)]
         for p in parameters
     ]
-
+    tindar_problems = [
+        item for sublist in tindar_problems_nested for item in sublist
+    ]
     tindars = [
         Tindar(tindar_problem=tindar_problem)
         for tindar_problem in tindar_problems
     ]
 
-    for tindar in tindars:
-        print("====================================================")
-        print(f"love_matrix.shape:{tindar.love_matrix.shape}")
+    results = []
 
-        print("----------------------------------------------------")
-        print("PULP SOLUTION")
+    timer = Timer()
+    i = 1
+    for solver in solvers:
+        for tp in tindars:
+            if verbose:
+                print("----------------------------------------------------")
+                print(f"Experiment {i}/{(len(tindars)*len(solvers))}: n={tp.n}"
+                      f" , connectedness={tp.connectedness}, solver={solver}")
+            timer.start()
+            obj, sol = tindar_solution(tp, solver)
+            stop = timer.stop()
 
-        tindar.create_problem()
-        with Timer():
-            tindar.solve_problem()
-        tindar.solution_status()
-        tindar.solution_obj()
+            result = {
+                "experiment_id": experiment_id,
+                "n": tp.n,
+                "connectedness": tp.connectedness,
+                "p": tp.p,
+                "solver": solver,
+                "objective_value": obj,
+                "solution": sol,
+                "time": stop
+            }
 
-        print("----------------------------------------------------")
-        print("HEURISTIC SOLUTION")
+            if verbose:
+                print(f"{solver} objective value: {obj}")
+                print(f"solve time: {stop}")
 
-        with Timer():
-            tindar.solve_problem(kind="heuristic")
-        tindar.solution_status(kind="heuristic")
-        tindar.solution_obj(kind="heuristic")
+            results.append(result)
+            i += 1
+
+    with open(result_path, 'w') as fp:
+        json.dump(results, fp)
+
+
+if __name__ == "__main__":
+    print("Give this experiment an ID:")
+    experiment_id = input()
+
+    ok = False
+    while not ok:
+        print("Do you want to use the default experiment settings? Y/N")
+        default_setting = input()
+
+        if default_setting in ["Y", "N", "y", "n", "yes", "no", "Yes", "No"]:
+            default_setting = default_setting.lower()[0]
+            ok = True
+
+    if default_setting == "y":
+        n_list = [1000]  # 10, 30, 50, 100, 200, 300, 500, 
+        connectedness_list = [3]  # 1, 3, 5, 8]
+        repeat = 10
+    else:
+        print("NOT IMPLEMENTED YET. USING DEFAULT SPECIFIED IN SOURCECODE")
+        # print("Number of Tindar people as list (e.g.) [10, 20, 30]: ")
+        # n = input()
+        # n = int(n)
+
+        # print("")
+
+    tindar_experiment(experiment_id=experiment_id,
+                      n_list=n_list,
+                      connectedness_list=connectedness_list,
+                      solvers=["heuristic", "pulp"],
+                      repeat=repeat,
+                      result_directory=PROJECT_DIR+"/data",
+                      verbose=True)
