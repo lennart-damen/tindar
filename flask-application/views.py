@@ -1,3 +1,5 @@
+from app import app
+
 import sys
 from pathlib import Path
 from flask import Flask, request, jsonify, render_template
@@ -7,8 +9,6 @@ PROJECT_DIR = str(Path(__file__).resolve().parents[1])
 sys.path.insert(1, PROJECT_DIR+"/tindar-engine")
 
 from tindar import Tindar, TindarGenerator
-
-app = Flask(__name__)
 
 
 @app.route('/', methods=["GET"])
