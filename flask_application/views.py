@@ -2,7 +2,10 @@ from flask_application import app
 
 import sys
 from pathlib import Path
-from flask import Flask, request, jsonify, render_template
+from flask import (
+    request, jsonify, render_template,
+    send_from_directory, abort
+)
 import numpy as np
 
 PROJECT_DIR = str(Path(__file__).resolve().parents[1])
@@ -118,3 +121,22 @@ def solve_tindar_problem():
 
     else:
         return "/api/solve only accepts GET and POST requests", 400
+
+
+@app.route("/results")
+def show_results():
+    return "TODO: results here", 200
+
+
+# https://pythonise.com/series/learning-flask/sending-files-with-flask
+# TODO: replace proposal.pdf by report.pdf
+@app.route("/report")
+def send_report():
+    try:
+        return send_from_directory(
+            PROJECT_DIR+"/documentation/",
+            filename="proposal.pdf",
+            as_attachment=True
+        ), 200
+    except FileNotFoundError:
+        abort(404)
