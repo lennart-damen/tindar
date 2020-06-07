@@ -1,0 +1,8 @@
+# cloudbuild.yaml
+steps:
+  # build & push the container image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/tindar-engine:1.0', '-f', 'Dockerfile', '.']
+  # Deploy container image to Cloud Run
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/tindar-engine:1.0']

@@ -1,6 +1,7 @@
 # Tindar: end-to-end Operations Research
 
-Welcome to the Tindar project: the optimal matchmaker!
+Welcome to the Tindar project: the optimal matchmaker! After some hard work, the Tindar project is finally
+deployed. Visit the Tindar web application [here](https://tindar-engine-small-chx6ixua2q-ew.a.run.app/)!
 
 ## Introduction
 The main purpose of this project is to build and share knowledge on how to develop
@@ -34,11 +35,12 @@ Done:
 - The Tindar engine
     - using OOP to solve games with PuLP and heuristic
     - using OOP to generate games
+    - build Flask app
+    - build Docker image
+    - send image to GCP container registry
+    - deploy to Cloud Run
 
 To do:
-- The Tindar API:
-    - build Flask app
-    - deploy to AWS Lambda/GCP functions
 - The Tindar game
     - Build user Interface with Dash
     - Deploy to Cloud Platform
@@ -53,6 +55,8 @@ To do:
     ├── README.md
     ├── .gitignore
     ├── code_evolution                  <------ Step-by-step development of sourcecode
+    ├── cloudbuild.yml                  <------ To build and push Docker image to GCP container registry
+    ├── Dockerfile
     ├── documentation                   <------ Eplanatory text documents
     ├── models                          <------ The BiLP models
     ├── notebooks

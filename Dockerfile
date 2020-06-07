@@ -1,12 +1,17 @@
 # Use existing image as base
 FROM python:3.7.6-slim-buster
-
-RUN mkdir /app
-WORKDIR /app/
+# FROM python:3.7-alpine
 
 # GCC build issue: https://github.com/docker-library/python/issues/318
 RUN apt-get update \
     && apt-get -y install gcc
+
+# RUN apk update \
+    # && apk add build-base
+
+# Use app directory to put tindar app
+RUN mkdir /app
+WORKDIR /app/
 
 # Download and install dependencies
 COPY . .
@@ -19,5 +24,4 @@ ENV FLASK_ENV=production
 
 # Run flask app
 EXPOSE 8080
-ENTRYPOINT ["python"]
-CMD ["run.py"]
+CMD ["gunicorn"  , "-b", "0.0.0.0:8080", "flask_application:app"]
