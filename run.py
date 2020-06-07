@@ -15,4 +15,4 @@ if __name__ == "__main__":
     except KeyError:
         # default config
         app.run(host="0.0.0.0", port="8080",
-                debug=True, threaded=True)
+                debug=False, threaded=True)
