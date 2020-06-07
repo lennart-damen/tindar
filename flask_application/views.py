@@ -34,7 +34,7 @@ def generate_tindar_problem():
             try:
                 n = int(v)
             except Exception:
-                return f"Did not specify n right: {v}", 
+                return f"Did not specify n right: {v}", 400
             param_count += 1
         elif k == "connectedness":
             try:

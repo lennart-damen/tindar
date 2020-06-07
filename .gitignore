@@ -107,3 +107,6 @@ target/
 
 # cloud zip
 *.zip
+
+# pytest cache
+/.pytest_cache
