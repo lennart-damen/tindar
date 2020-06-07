@@ -9,10 +9,10 @@ if __name__ == "__main__":
             app.run(
                 host=os.environ["HOST"],
                 port=int(os.environ["PORT"]),
-                debug=False,
+                debug=True,
                 threaded=True
             )
     except KeyError:
         # default config
         app.run(host="0.0.0.0", port="8080",
-                debug=False, threaded=True)
+                debug=True, threaded=True)
