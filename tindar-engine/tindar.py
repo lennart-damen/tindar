@@ -390,7 +390,8 @@ def tindar_solution(tindar, solver):
 
     return (
         tindar.solution_obj(kind=solver, verbose=False),
-        tindar.solution_vars(kind=solver, verbose=False).tolist()
+        tindar.solution_vars(kind=solver, verbose=False).tolist(),
+        tindar.solution_status(kind=solver)
     )
 
 
@@ -447,7 +448,7 @@ def tindar_experiment(experiment_id="default_id",
                 print(f"Experiment {i}/{(len(tindars)*len(solvers))}: n={tp.n}"
                       f" , connectedness={tp.connectedness}, solver={solver}")
             timer.start()
-            obj, sol = tindar_solution(tp, solver)
+            obj, sol, stat = tindar_solution(tp, solver)
             stop = timer.stop()
 
             result = {
@@ -456,6 +457,7 @@ def tindar_experiment(experiment_id="default_id",
                 "connectedness": tp.connectedness,
                 "p": tp.p,
                 "solver": solver,
+                "status": stat,
                 "objective_value": obj,
                 "solution": sol,
                 "time": stop
@@ -463,7 +465,6 @@ def tindar_experiment(experiment_id="default_id",
 
             if verbose:
                 print(f"{solver} objective value: {obj}")
-                print(f"solve time: {stop}")
 
             results.append(result)
             i += 1
@@ -481,16 +482,22 @@ if __name__ == "__main__":
         print("Do you want to use the default experiment settings? Y/N")
         default_setting = input()
 
-        if default_setting in ["Y", "N", "y", "n", "yes", "no", "Yes", "No"]:
+        if default_setting in ["Y", "N"]:
             default_setting = default_setting.lower()[0]
             ok = True
+        else:
+            print("Choose Y or N")
 
-    if default_setting == "y":
-        n_list = [1000]  # 10, 30, 50, 100, 200, 300, 500, 
-        connectedness_list = [3]  # 1, 3, 5, 8]
+    if default_setting == "Y":
+        n_list = [10, 30, 50, 100, 200, 300, 500]
+        connectedness_list = [1, 3, 5, 8]
         repeat = 10
     else:
+        # TODO
         print("NOT IMPLEMENTED YET. USING DEFAULT SPECIFIED IN SOURCECODE")
+        n_list = [10, 30, 50, 100, 200, 300, 500]
+        connectedness_list = [1, 3, 5, 8]
+        repeat = 10
         # print("Number of Tindar people as list (e.g.) [10, 20, 30]: ")
         # n = input()
         # n = int(n)
