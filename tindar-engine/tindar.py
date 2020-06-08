@@ -276,7 +276,9 @@ class Tindar:
                 print("Status:", stat)
             return stat
         elif kind == "heuristic":
+            stat = "Solved (optimal unsure)"
             print("Heuristic always solves")
+            return stat
         else:
             raise ValueError(
                 f"kind {kind} not allowed"
@@ -401,6 +403,7 @@ def tindar_experiment(experiment_id="default_id",
                       solvers=["pulp", "heuristic"],
                       repeat=10,
                       result_directory=PROJECT_DIR+"/data",
+                      save_problem_and_solution=False,
                       verbose=True):
     '''Writes results of Tindar experiment to a json file
 
@@ -418,6 +421,8 @@ def tindar_experiment(experiment_id="default_id",
         number of times a combination of n - connectedness should be
         repeated
     result_directory: str of a path
+    save_problem_and_solution: bool
+        if true, saves the love_matrix and solution matrix
     verbose: str
     '''
 
@@ -440,34 +445,40 @@ def tindar_experiment(experiment_id="default_id",
     results = []
 
     timer = Timer()
-    i = 1
-    for solver in solvers:
-        for tp in tindars:
+    for i, solver in enumerate(solvers):
+        for j, tp in enumerate(tindars):
             if verbose:
                 print("----------------------------------------------------")
-                print(f"Experiment {i}/{(len(tindars)*len(solvers))}: n={tp.n}"
-                      f" , connectedness={tp.connectedness}, solver={solver}")
+                print(f"Experiment {(i+1)*j}/{(len(tindars)*len(solvers))}: "
+                      f"n={tp.n} , connectedness={tp.connectedness}, "
+                      f"solver={solver}")
             timer.start()
             obj, sol, stat = tindar_solution(tp, solver)
             stop = timer.stop()
 
             result = {
                 "experiment_id": experiment_id,
+                "tindar_id": j,
                 "n": tp.n,
                 "connectedness": tp.connectedness,
                 "p": tp.p,
                 "solver": solver,
                 "status": stat,
                 "objective_value": obj,
-                "solution": sol,
                 "time": stop
             }
+
+            if save_problem_and_solution:
+                result = {
+                    **result,
+                    "love_matrix": tp.love_matrix,
+                    "solution": sol
+                }
 
             if verbose:
                 print(f"{solver} objective value: {obj}")
 
             results.append(result)
-            i += 1
 
     with open(result_path, 'w') as fp:
         json.dump(results, fp)
@@ -482,16 +493,16 @@ if __name__ == "__main__":
         print("Do you want to use the default experiment settings? Y/N")
         default_setting = input()
 
-        if default_setting in ["Y", "N"]:
+        if default_setting in ["Y", "N", "y", "n"]:
             default_setting = default_setting.lower()[0]
             ok = True
         else:
             print("Choose Y or N")
 
-    if default_setting == "Y":
-        n_list = [10, 30, 50, 100, 200, 300, 500]
-        connectedness_list = [1, 3, 5, 8]
-        repeat = 10
+    if default_setting == "y":
+        n_list = [50]  # [10, 30, 50, 100, 200, 300, 500]
+        connectedness_list = [4]  # [1, 3, 5, 8]
+        repeat = 100
     else:
         # TODO
         print("NOT IMPLEMENTED YET. USING DEFAULT SPECIFIED IN SOURCECODE")
@@ -510,4 +521,5 @@ if __name__ == "__main__":
                       solvers=["heuristic", "pulp"],
                       repeat=repeat,
                       result_directory=PROJECT_DIR+"/data",
+                      save_problem_and_solution=False,
                       verbose=True)
