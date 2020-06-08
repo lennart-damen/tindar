@@ -107,6 +107,8 @@ cd tindar-engine
 python tindar.py
 ```
 
+The results are stored in the 'data' folder.
+
 ## Project Organization
 ------------
 
