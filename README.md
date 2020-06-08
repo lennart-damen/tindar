@@ -1,7 +1,7 @@
 # Tindar: end-to-end Operations Research
 
 Welcome to the Tindar project: the optimal matchmaker! After some hard work, the Tindar project is finally
-deployed. Visit the Tindar web application [here](tindar-engine-xs-chx6ixua2q-ew.a.run.app)!
+deployed. Visit the Tindar web application [here](http://tindar-engine-xs-chx6ixua2q-ew.a.run.app)!
 
 ## Introduction
 The main purpose of this project is to build and share knowledge on how to develop
@@ -57,7 +57,7 @@ pip install -r requirements_extend.txt
 in which case you can launch Jupyter notebooks with all our dependencies after registering your virtual environment (https://janakiev.com/blog/jupyter-virtual-envs/, see Add Virtual Environment to Jupyter Notebook).
 
 ## Usage
-To get a better grasp on the purpose and capabilities of this project, check out [the web app](tindar-engine-xs-chx6ixua2q-ew.a.run.app)and/or read the documentation in ./documentation/report.
+To get a better grasp on the purpose and capabilities of this project, check out [the web app](http://tindar-engine-xs-chx6ixua2q-ew.a.run.app)and/or read the documentation in ./documentation/report.
 
 First, make sure your virtual environment is still activated and you are in the repository home.
 
