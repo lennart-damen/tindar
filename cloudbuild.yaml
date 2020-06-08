@@ -1,8 +1,11 @@
 # cloudbuild.yaml
+
+# check out https://cloud.google.com/cloud-build/docs/deploying-builds/deploy-cloud-run
+# for auto-deploy
 steps:
-  # build & push the container image
+  # build the container image
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'gcr.io/$PROJECT_ID/tindar-engine:1.0', '-f', 'Dockerfile', '.']
-  # Deploy container image to Cloud Run
+  # push the container image to Container Registry
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'gcr.io/$PROJECT_ID/tindar-engine:1.0']

@@ -23,30 +23,53 @@ so they can only go on a real date with a single person.
 Your job is to make your community as happy as possible by pairing up as many users as
 you can.
 
-## Tindar components
-The Tindar project consists of three components:
+## Installation
+I would recommend to isolate the dependencies of this project in a virtual environment with [venv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/) or [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html).
 
-1. the Tindar engine: generate and solve tindar problems (this repo)
-2. the Tindar API: interact with the Tindar engine (TODO: href here)
-3. the Tindar game: interactive game to show users the power of Operations Research (TODO: href here)
+### Clone and install dependencies
+For now, you can clone this repository and experiment by importing the modules manually. Go to a directory of your choice, then clone the repository:
+```
+git clone https://github.com/lennart-damen/tindar
+```
+Create a virtual environment named "env":
+```
+python -m venv env
+```
+Activate the environment (example below for Windows):
+```
+cd env
+cd Scripts
+activate
+```
+Go back to the home folder
+```
+cd ..
+cd ..
+```
+Install the dependencies
+```
+pip install -r requirements.txt
+```
+for minimal local experimentation with Tindar and Flask. You can also:
+```
+pip install -r requirements_extend.txt
+```
+in which case you can launch Jupyter notebooks with all our dependencies after registering your virtual environment (https://janakiev.com/blog/jupyter-virtual-envs/, see Add Virtual Environment to Jupyter Notebook).
 
-Done:
-- The mathematical Tindar model (see documentation)
-- The Tindar engine
-    - using OOP to solve games with PuLP and heuristic
-    - using OOP to generate games
-    - build Flask app
-    - build Docker image
-    - send image to GCP container registry
-    - deploy to Cloud Run
+## Usage
+To get a better grasp on the purpose and capabilities of this project, check out [the web app](https://tindar-engine-small-chx6ixua2q-ew.a.run.app/)! and/or read the documentation in ./documentation/report.
 
-To do:
-- The Tindar game
-    - Build user Interface with Dash
-    - Deploy to Cloud Platform
-- Documentation
-    - update heuristic description
-    - compute and report results of tindar experiments
+First, make sure your virtual environment is still activated and you are in the repository home.
+
+To start the Flask app locally on port 8080:
+```
+python run.py
+```
+You can also investigate how the PuLP solver compares to the heuristic, by doing a Tindar experiment
+```
+cd tindar-engine
+python tindar.py
+```
 
 ## Project Organization
 ------------
@@ -76,47 +99,3 @@ To do:
     │   │── custom_timer.py
     ├── tests                           <------ Testing sourcecode with pytest
 
-
-## Installation
-I would recommend to isolate the dependencies of this project in a virtual environment with [venv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/) or [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html).
-
-### Clone and use
-For now, you can clone this repository and experiment by importing the modules manually. First:
-```
-pip install -r requirements.txt
-```
-for minimal local experimentation with Tindar and Flask. You can also:
-```
-pip install -r requirements_extend.txt
-```
-in which case you can launch Jupyter notebooks with all our dependencies after registering your virtual environment (https://janakiev.com/blog/jupyter-virtual-envs/, see Add Virtual Environment to Jupyter Notebook).
-
- Make sure that the Python interpreter can find the paths the the modules.
-
-### PyPi distribution
-I am still working on a PyPi distribution, which is not ready yet. Once ready, you will be able to install with pip.
-
-After activating the environment, you can install the Tindar engine from test.pypi:
-
-```
-pip install -i https://test.pypi.org/simple/ tindar-engine
-```
-
-Also make sure to install the additional dependencies listed in this repository. Download requirements.txt and:
-```
-pip install -r requirements.txt
-```
-
-This package is just experimental, and I prefer to keep my project structure as defined above. To use the package, start an interpreter. Then, you can use the package like so:
-
-```python
-from src.tindar import Tindar
-```
-
-TO DO:
-- code above does not work, get error: from timer import Timer -> ModuleNotFoundError: No module named 'timer'
-- Tindar.write_problem() default path will not work in the PyPi distribution
-
-## Far Future
-CI/CD with Github/Gitlab and GCP Cloud Build?
-Full web app with database, log-in, ...?
