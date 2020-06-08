@@ -14,6 +14,9 @@ but I also see around me that many projects never really lift off. I use the Tin
 to prove to myself and others that the technical aspect should not be the
 limiting factor.
 
+This project was also submitted as Capstone project for the Machine Learning Engineering course on Udacity.
+The review of the project proposal can be found [here](https://review.udacity.com/#!/reviews/2338879)
+
 ## Tindar challenge
 Suppose you owned a dating company. Once every week, people come to your venue to find their
 ideal partner. During the speed-dating round, every person expresses if he/she would like
