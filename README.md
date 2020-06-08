@@ -61,11 +61,47 @@ To get a better grasp on the purpose and capabilities of this project, check out
 
 First, make sure your virtual environment is still activated and you are in the repository home.
 
-To start the Flask app locally on port 8080:
+To experiment with the Flask app locally on port 8080:
 ```
 python run.py
 ```
-You can also investigate how the PuLP solver compares to the heuristic, by doing a Tindar experiment
+
+Tindar.py contains two objects: TindarGenerator and Tindar.
+TindarGenerator let's you simulate a Tindar problem (characterised by the matrix of people's interests in each other, called love_matrix):
+```
+from tindar import TindarGenerator
+
+tindar_problem = TindarGenerator(n=5, connectedness=4)
+tindar_problem.love_matrix
+
+[
+    [0, 1, 0, 0, 1],
+    [1, 0, 0, 1, 0],
+    [0, 0, 0, 1, 1],
+    [1, 0, 0, 0, 0],
+    [1, 1, 0, 1, 0]
+]
+
+```
+You can find the optimal pairing with PuLP by:
+```
+from tindar import Tindar
+
+solver = "pulp"
+tindar = Tindar(tindar_problem=tindar_problem)
+
+tindar.create_problem()
+tindar.solve_problem(kind=solver)
+tindar.solution_status(kind=solver)
+tindar.solution_obj(kind=solver, verbose=True),
+tindar.solution_vars(kind=solver, verbose=True)
+```
+
+You can also choose 'solver="heuristic". This algorithm is much faster but the solution is sub-optimal.
+In that case, you don't have to do tindar.create_problem().
+
+To run the full Tindar experiment, run tindar.py as main script.
+WARNING: the default config in the main script takes >10 minutes to run. You can change the parameters in the source code of tindar.py.
 ```
 cd tindar-engine
 python tindar.py
