@@ -364,7 +364,7 @@ class TindarGenerator:
 
     @classmethod
     def bernouilli_parameter(self, connectedness):
-        diff_scaled = (connectedness-self.MIN_EDGE_PROB)/self.MAX_CONNECTEDNESS
+        diff_scaled = (connectedness-self.MIN_CONNECTEDNESS)/self.MAX_CONNECTEDNESS
         return (diff_scaled*self.MAX_EDGE_PROB) + self.MIN_EDGE_PROB
 
     def create_love_matrix(self, n=None, connectedness=None, inplace=True):
@@ -443,13 +443,13 @@ def tindar_experiment(experiment_id="default_id",
     ]
 
     results = []
-
+    counter = 1
     timer = Timer()
-    for i, solver in enumerate(solvers):
+    for solver in solvers:
         for j, tp in enumerate(tindars):
             if verbose:
                 print("----------------------------------------------------")
-                print(f"Experiment {(i+1)*j}/{(len(tindars)*len(solvers))}: "
+                print(f"Experiment {counter}/{(len(tindars)*len(solvers))}: "
                       f"n={tp.n} , connectedness={tp.connectedness}, "
                       f"solver={solver}")
             timer.start()
@@ -480,6 +480,8 @@ def tindar_experiment(experiment_id="default_id",
 
             results.append(result)
 
+            counter += 1
+
     with open(result_path, 'w') as fp:
         json.dump(results, fp)
 
@@ -500,9 +502,9 @@ if __name__ == "__main__":
             print("Choose Y or N")
 
     if default_setting == "y":
-        n_list = [50]  # [10, 30, 50, 100, 200, 300, 500]
-        connectedness_list = [4]  # [1, 3, 5, 8]
-        repeat = 100
+        n_list = [10, 30, 50, 100, 200, 300, 500]
+        connectedness_list = [1, 3, 5, 8]
+        repeat = 10
     else:
         # TODO
         print("NOT IMPLEMENTED YET. USING DEFAULT SPECIFIED IN SOURCECODE")
