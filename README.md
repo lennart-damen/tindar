@@ -55,6 +55,7 @@ To do:
     ├── .gitignore
     ├── code_evolution                  <------ Step-by-step development of Tindar sourcecode
     ├── cloudbuild.yml                  <------ To build and push Docker image to GCP container registry
+    ├── data                            <------ Folder to hold results of running "tindar-engine/tindar.py"
     ├── Dockerfile
     ├── documentation                   <------ Eplanatory text documents
     ├── flask_application               <------ The self-documented Tindar web application
