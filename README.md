@@ -77,13 +77,15 @@ To do:
 
 
 ## Installation
+I would recommend to isolate the dependencies of this project in a virtual environment with [venv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/) or [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). 
+
 ### Clone and use
 For now, you can clone this repository and experiment by importing the modules manually. Make sure that the Python interpreter can find the paths the the modules.
 
 ### PyPi distribution
 I am still working on a PyPi distribution, which is not ready yet. Once ready, you will be able to install with pip.
 
-I would recommend to isolate the dependencies of this project in a virtual environment with [venv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/) or [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). After activating the environment, you can install the Tindar engine from test.pypi:
+After activating the environment, you can install the Tindar engine from test.pypi:
 
 ```
 pip install -i https://test.pypi.org/simple/ tindar-engine
