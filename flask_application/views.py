@@ -13,6 +13,7 @@ sys.path.insert(1, PROJECT_DIR+"/tindar-engine")
 
 from tindar import Tindar, TindarGenerator
 
+MAX_SOLUTION_N = 50
 
 @app.route('/', methods=["GET"])
 def index():
@@ -107,6 +108,13 @@ def solve_tindar_problem():
             except Exception as e:
                 return f"Could not initialize Tindar object: {e}"
 
+            if tindar.n > MAX_SOLUTION_N:
+                return (
+                    "Only allowed to send Tindar problems with "
+                    f"n <= {MAX_SOLUTION_N}",
+                    400
+                )
+
             if solver == "pulp":
                 tindar.create_problem()
 
@@ -138,7 +146,7 @@ def send_report():
     try:
         return send_from_directory(
             PROJECT_DIR+"/documentation/",
-            filename="proposal.pdf",
+            filename="report.pdf",
             as_attachment=True
         ), 200
     except FileNotFoundError:
