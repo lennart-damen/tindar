@@ -77,10 +77,20 @@ To do:
 
 
 ## Installation
-I would recommend to isolate the dependencies of this project in a virtual environment with [venv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/) or [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). 
+I would recommend to isolate the dependencies of this project in a virtual environment with [venv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/) or [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html).
 
 ### Clone and use
-For now, you can clone this repository and experiment by importing the modules manually. Make sure that the Python interpreter can find the paths the the modules.
+For now, you can clone this repository and experiment by importing the modules manually. First:
+```
+pip install -r requirements.txt
+```
+for minimal local experimentation with Tindar and Flask. You can also:
+```
+pip install -r requirements_extend.txt
+```
+in which case you can launch Jupyter notebooks with all our dependencies after registering your virtual environment (https://janakiev.com/blog/jupyter-virtual-envs/, see Add Virtual Environment to Jupyter Notebook).
+
+ Make sure that the Python interpreter can find the paths the the modules.
 
 ### PyPi distribution
 I am still working on a PyPi distribution, which is not ready yet. Once ready, you will be able to install with pip.
