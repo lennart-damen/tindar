@@ -333,10 +333,11 @@ class TindarGenerator:
     MIN_EDGE_PROB = 0.05
     MAX_EDGE_PROB = 0.75
 
-    def __init__(self, n, connectedness):
+    def __init__(self, n, connectedness, nan_probability=None):
         self.check_init(n, connectedness)
         self.n = n
         self.connectedness = connectedness
+        self.nan_probability = nan_probability
         self.create_love_matrix()
 
     def __repr__(self):
@@ -367,14 +368,22 @@ class TindarGenerator:
         diff_scaled = (connectedness-self.MIN_CONNECTEDNESS)/self.MAX_CONNECTEDNESS
         return (diff_scaled*self.MAX_EDGE_PROB) + self.MIN_EDGE_PROB
 
-    def create_love_matrix(self, n=None, connectedness=None, inplace=True):
+    def create_love_matrix(self, n=None, connectedness=None, nan_probability=None, inplace=True):
         if n is None:
             n = self.n
         if connectedness is None:
             connectedness = self.connectedness
+        if nan_probability is None:
+            nan_probability = self.nan_probability
 
         self.p = self.bernouilli_parameter(connectedness)
-        love_matrix = np.random.binomial(1, self.p, size=(n, n))
+        love_matrix = np.random.binomial(1, self.p, size=(n, n)).astype(float)
+
+        if nan_probability is not None:
+            nan_indicator = np.random.binomial(
+                n=1, p=nan_probability, size=love_matrix.shape,
+            ).astype(bool)
+            love_matrix[nan_indicator] = np.nan
 
         for i in range(n):
             love_matrix[i, i] = 0
