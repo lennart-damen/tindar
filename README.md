@@ -1,7 +1,7 @@
 # Tindar: end-to-end Operations Research
 
 Welcome to the Tindar project: the optimal matchmaker! After some hard work, the Tindar project is finally
-deployed. Visit the Tindar web application [here](http://tindar-engine-xs-chx6ixua2q-ew.a.run.app)!
+deployed. Visit the Tindar web application [here](https://tindar-engine-yvx7vohkaa-ez.a.run.app/)!
 
 ## Introduction
 The main purpose of this project is to build and share knowledge on how to develop
