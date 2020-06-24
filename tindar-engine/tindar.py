@@ -332,17 +332,29 @@ class TindarGenerator:
     MAX_CONNECTEDNESS = 10
     MIN_EDGE_PROB = 0.05
     MAX_EDGE_PROB = 0.75
+    UNIF_LOW = 0.3
+    UNIF_HIGH = 0.6
 
-    def __init__(self, n, connectedness, nan_probability=None):
+    def __init__(self, n, connectedness=None, nan_probability=None,
+                 generation_kind="simple", attractiveness_distr="uniform",
+                 unif_low=UNIF_LOW, unif_high=UNIF_HIGH):
         self.check_init(n, connectedness)
         self.n = n
         self.connectedness = connectedness
         self.nan_probability = nan_probability
+        self.generation_kind = generation_kind
+        self.attractiveness_distr = attractiveness_distr
+        self.unif_low = unif_low
+        self.unif_high = unif_high
         self.create_love_matrix()
 
     def __repr__(self):
         return (f"Tindar problem with n={self.n}, connectedness= "
                 f"{self.connectedness}, p={self.p}")
+
+    @staticmethod
+    def ROMANCE_LEVEL_FN(attractiveness_level):
+        return (1/(attractiveness_level+1))**1.5 - 0.2
 
     # Input validation
     @classmethod
@@ -356,29 +368,88 @@ class TindarGenerator:
                              f"n={n} < 0")
 
         # connectedness
-        if not isinstance(connectedness, (int, float)):
+        if not (isinstance(connectedness, (int, float)) or connectedness is None):
             raise ValueError(f"TindarGenerator init error: "
                              f"type(connectedness) = {type(connectedness)}")
-        if not (self.MIN_CONNECTEDNESS <= connectedness <= self.MAX_CONNECTEDNESS):
-            raise ValueError(f"TindarGenerator init error: "
-                             f"connectedness={connectedness} not between 1 and 10")
+        if connectedness is not None:
+            if not (self.MIN_CONNECTEDNESS <= connectedness <= self.MAX_CONNECTEDNESS):
+                raise ValueError(f"TindarGenerator init error: "
+                                 f"connectedness={connectedness} not between 1 and 10")
 
     @classmethod
     def bernouilli_parameter(self, connectedness):
         diff_scaled = (connectedness-self.MIN_CONNECTEDNESS)/self.MAX_CONNECTEDNESS
         return (diff_scaled*self.MAX_EDGE_PROB) + self.MIN_EDGE_PROB
 
-    def create_love_matrix(self, n=None, connectedness=None, nan_probability=None, inplace=True):
+    @classmethod
+    def _create_interesting_love_values(self, n, attractiveness_distr=None, unif_low=None, unif_high=None):
+        # Sample attractiveness levels
+        nu = np.random.uniform(low=unif_low, high=unif_high, size=n)
+        nu[nu < 0] = 0
+        nu[nu > 1] = 1
+
+        # Calculate corresponding romance levels
+        mu = np.array([self.ROMANCE_LEVEL_FN(n) for n in nu])
+        mu[mu < 0] = 0
+        mu[mu > 1] = 1
+
+        # Compute love interests
+        mu_colvec = mu.reshape((-1, 1))
+        nu_rowvec = nu.reshape((1, -1))
+
+        love_values = np.dot(mu_colvec, nu_rowvec)
+
+        return love_values
+
+    @staticmethod
+    def _convert_love_values_to_binary(love_values):
+        love_values_scaled = (love_values - love_values.min())/(love_values.max() - love_values.min())
+
+        love_matrix = love_values_scaled.copy()
+        love_matrix[love_matrix > 0.5] = 1
+        love_matrix[love_matrix <= 0.5] = 0
+
+        return love_matrix
+
+    def create_love_matrix(self, n=None, connectedness=None, nan_probability=None, inplace=True, generation_kind=None,
+                           attractiveness_distr=None, unif_low=None, unif_high=None):
         if n is None:
             n = self.n
         if connectedness is None:
             connectedness = self.connectedness
         if nan_probability is None:
             nan_probability = self.nan_probability
+        if generation_kind is None:
+            generation_kind = self.generation_kind
+        if attractiveness_distr is None:
+            attractiveness_distr = self.attractiveness_distr
+        if unif_low is None:
+            unif_low = self.unif_low
+        if unif_high is None:
+            unif_high = self.unif_high
 
-        self.p = self.bernouilli_parameter(connectedness)
-        love_matrix = np.random.binomial(1, self.p, size=(n, n)).astype(float)
+        # Based on bernouilli sampling
+        if generation_kind == "simple":
+            self.p = self.bernouilli_parameter(connectedness)
+            love_matrix = np.random.binomial(1, self.p, size=(n, n)).astype(float)
 
+        # See notebook 4 for explanation
+        elif generation_kind == "interesting":
+            if attractiveness_distr == "uniform":
+                love_values = self._create_interesting_love_values(
+                    n, attractiveness_distr, unif_low, unif_high
+                )
+            else:
+                raise ValueError(f"attractiveness_distr {attractiveness_distr}"
+                                 " not implemented")
+
+            # Convert to binary interest
+            love_matrix = self._convert_love_values_to_binary(love_values)
+
+        else:
+            raise ValueError(f"kind {generation_kind} not implemented")
+
+        # Generate missing values
         if nan_probability is not None:
             nan_indicator = np.random.binomial(
                 n=1, p=nan_probability, size=love_matrix.shape,
