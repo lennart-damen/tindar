@@ -40,14 +40,7 @@ python -m venv env
 ```
 Activate the environment (example below for Windows):
 ```
-cd env
-cd Scripts
-activate
-```
-Go back to the home folder
-```
-cd ..
-cd ..
+env\Scripts\activate
 ```
 Install the dependencies
 ```
