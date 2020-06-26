@@ -411,8 +411,12 @@ class TindarGenerator:
 
         return love_matrix
 
-    def create_love_matrix(self, n=None, connectedness=None, nan_probability=None, inplace=True, generation_kind=None,
-                           attractiveness_distr=None, unif_low=None, unif_high=None):
+    def create_love_matrix(self, n: int = None, connectedness: Optional[int] = None,
+                          nan_probability: Optional[float] = None, inplace: Optional[bool] = True,
+                          generation_kind: Optional[str] = None, attractiveness_distr: Optional[str] = None,
+                          unif_low: Optional[float] = None, unif_high: Optional[float] = None):
+        
+        # if parameters not specified, use instance attributes
         if n is None:
             n = self.n
         if connectedness is None:
