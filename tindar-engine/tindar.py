@@ -1,5 +1,6 @@
 # tindar.py
 
+from typing import Optional
 from pulp import *
 import numpy as np
 from pathlib import Path
@@ -415,7 +416,7 @@ class TindarGenerator:
                           nan_probability: Optional[float] = None, inplace: Optional[bool] = True,
                           generation_kind: Optional[str] = None, attractiveness_distr: Optional[str] = None,
                           unif_low: Optional[float] = None, unif_high: Optional[float] = None):
-        
+
         # if parameters not specified, use instance attributes
         if n is None:
             n = self.n
