@@ -40,14 +40,7 @@ python -m venv env
 ```
 Activate the environment (example below for Windows):
 ```
-cd env
-cd Scripts
-activate
-```
-Go back to the home folder
-```
-cd ..
-cd ..
+env\Scripts\activate
 ```
 Install the dependencies
 ```
@@ -60,7 +53,7 @@ pip install -r requirements_extend.txt
 in which case you can launch Jupyter notebooks with all our dependencies after registering your virtual environment (https://janakiev.com/blog/jupyter-virtual-envs/, see Add Virtual Environment to Jupyter Notebook).
 
 ## Usage
-To get a better grasp on the purpose and capabilities of this project, check out [the web app](http://tindar-engine-xs-chx6ixua2q-ew.a.run.app) and/or read the documentation in ./documentation/report.
+To get a better grasp on the purpose and capabilities of this project, check out [the web app](https://tindar-engine-yvx7vohkaa-ez.a.run.app/) and/or read the documentation in ./documentation/report.
 
 First, make sure your virtual environment is still activated and you are in the repository home.
 
