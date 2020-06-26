@@ -1,3 +1,0 @@
-https://cloud.google.com/sdk/gcloud/reference/builds/submit
-
-gcloud builds submit --config <build_file>.yaml --ignore-file <name>.gcloudignore

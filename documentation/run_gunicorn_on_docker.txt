@@ -1,3 +1,0 @@
-https://stackoverflow.com/questions/43925487/how-to-run-gunicorn-on-docker
-
-CMD ["gunicorn"  , "-b", "0.0.0.0:8000", "flask_application:app"]

@@ -1,8 +1,0 @@
-https://packaging.python.org/tutorials/packaging-projects/
-
-- make sure to install packages: python -m pip install --user --upgrade setuptools wheel
-- go to project folder
-- delete dist folder if exists
-- change the version number in setup.py
-- run python setup.py sdist bdist_wheel
-- run python -m twine upload --repository testpypi dist/*

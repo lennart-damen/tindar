@@ -1,5 +1,0 @@
-error:ECS cluster
-Unable to assume the service linked role. Please verify that the ECS service linked role exists.
-https://github.com/aws/amazon-ecs-cli/issues/733
-
-retry automatically resolves.
