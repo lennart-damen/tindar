@@ -1,6 +1,9 @@
 # machine_learning.py
 
-from typing import List, Set, Dict, Tuple, Optional
+import sys
+from pathlib import Path
+# import logging  # TODO implement
+from typing import List, Set, Dict, Tuple, Optional, Iterator
 import numpy as np
 import pandas as pd
 import surprise
@@ -12,6 +15,13 @@ from sklearn.metrics import (
     accuracy_score, roc_auc_score, f1_score,
     precision_score, recall_score, confusion_matrix
 )
+
+PROJECT_DIR = str(Path(__file__).resolve().parents[1])
+
+sys.path.insert(1, PROJECT_DIR+"src")
+import tindar
+
+MIN_ROC_AUC_SCORE = 0.75
 
 CLASSIFICATION_SCORE_FUNCS_DICT = {
     "accuracy_score": accuracy_score,
@@ -34,7 +44,10 @@ class LovePredictor:
         self.test_size = test_size
 
     # Data handeling
-    def pandas_data(self, love_matrix: np.array, inplace: Optional[bool] = True):
+    def pandas_data(self, love_matrix: Optional[np.array] = None, inplace: Optional[bool] = True):  # -> Optional[Tuple]
+        if love_matrix is None:
+            love_matrix = self.love_matrix
+
         df_love = pd.DataFrame(love_matrix)
         df_love_long = wide_to_long(df_love, drop_na=False)
 
@@ -44,12 +57,12 @@ class LovePredictor:
         else:
             return df_love, df_love_long
 
-    def surprise_data(self, df_long: Optional[pd.DataFrame], reader: Optional[Reader],
-                      inplace: Optional[bool] = True):
+    def surprise_data(self, df_long: Optional[pd.DataFrame] = None, reader: Optional[Reader] = None,
+                      inplace: Optional[bool] = True):  # -> Optional[Dataset]
 
-        if not df_long:
-            df_long = self.df_love
-        if not reader:
+        if df_long is None:
+            df_long = self.df_love_long
+        if reader is None:
             reader = self.reader
 
         surprise_dataset = Dataset.load_from_df(
@@ -62,7 +75,7 @@ class LovePredictor:
             return surprise_dataset
 
     @staticmethod
-    def _love_long_split(df_love_long):
+    def love_long_split(df_love_long: pd.DataFrame):  # -> Tuple(pd.DataFrame, pd.DataFrame)
         filled = df_love_long["Value"].notnull()
         df_love_long_filled = df_love_long.loc[filled, :]
         df_love_long_nan = df_love_long.loc[~filled, :]
@@ -70,10 +83,11 @@ class LovePredictor:
         return df_love_long_filled, df_love_long_nan
 
     # Splitting data
-    def split_train_test(self, surprise_dataset: Optional[Dataset], test_size: Optional[float], inplace: Optional[bool]):
-        if not surprise_dataset:
+    def split_train_test(self, surprise_dataset: Optional[Dataset] = None,
+                        test_size: Optional[float] = None, inplace: Optional[bool] = True):  # -> Optional[Tuple]
+        if surprise_dataset is None:
             surprise_dataset = self.surprise_dataset
-        if not test_size:
+        if test_size is None:
             test_size = self.test_size
 
         trainset, testset = train_test_split(surprise_dataset, test_size)
@@ -85,10 +99,11 @@ class LovePredictor:
             return trainset, testset
 
     # Model fit
-    def fit(self, model: Optional[AlgoBase], trainset: Optional[surprise.trainset.Trainset], inplace: Optional[bool]):
-        if not model:
+    def fit(self, model: Optional[AlgoBase] = None, trainset: Optional[surprise.trainset.Trainset] = None,
+            inplace: Optional[bool] = True):  # -> Optional[AlgoBase]
+        if model is None:
             model = self.model
-        if not trainset:
+        if trainset is None:
             trainset = self.trainset
 
         fit_model = model.fit(trainset)
@@ -100,7 +115,7 @@ class LovePredictor:
 
     # Model predict
     @staticmethod
-    def df_long_to_surprise_predictset_iterator(df_long):
+    def df_long_to_surprise_predictset_iterator(df_long: pd.DataFrame):  # -> pd.DataFrame
         predictset_iterator = zip(
             df_long["Row"].values,
             df_long["Column"].values,
@@ -109,7 +124,10 @@ class LovePredictor:
 
         return predictset_iterator
 
-    def get_predictions(self, model: Optional[AlgoBase], predictset: List[Tuple]):
+    def predict(self, predictset: List[Tuple], model: Optional[AlgoBase] = None):  # -> List
+        if model is None:
+            model = self.model
+
         try:
             prediction_list = model.test(predictset)
         except AttributeError as e:
@@ -120,7 +138,7 @@ class LovePredictor:
         return prediction_list
 
     @staticmethod
-    def surprise_predictions_to_df(predictions_surp):
+    def surprise_predictions_to_df(predictions_surp: List):  # -> pd.DataFrame
         values = [(x.uid, x.iid, x.r_ui, x.est) for x in predictions_surp]
 
         df_predictions = pd.DataFrame(
@@ -131,24 +149,26 @@ class LovePredictor:
         return df_predictions
 
     @classmethod
-    def round_probas(cls, df_predictions):
+    def round_probas(cls, probs_series: pd.Series):  # -> pd.Series
         low = cls.rating_scale[0]
         high = cls.rating_scale[1]
 
         rating_middle = (high - low)/2
-        df_predictions["y_hat"] = df_predictions["probabilities"].copy()
 
-        round_up_bool = df_predictions.loc[:, "probabilities"] > rating_middle
-        round_down_bool = df_predictions.loc[:, "probabilities"] <= rating_middle
+        y_hat = probs_series.copy()
+        y_hat.name = "y_hat"
+        y_hat[y_hat > rating_middle] = high
+        y_hat[y_hat <= rating_middle] = low
+        print(y_hat.head())
+        return y_hat
 
-        df_predictions.loc[round_up_bool, "y_hat"] = high
-        df_predictions.loc[round_down_bool, "y_hat"] = low
-
-        return df_predictions
+    # TODO: implement to follow sklearn
+    def score():
+        pass
 
 
 # Model evaluation
-def compute_classification_scores(y, y_hat, classification_score_funcs_dict=CLASSIFICATION_SCORE_FUNCS_DICT):
+def compute_classification_scores(y, y_hat, classification_score_funcs_dict=CLASSIFICATION_SCORE_FUNCS_DICT):  # -> Dict
     classification_scores = {
         k: v(y, y_hat)
         for k, v in classification_score_funcs_dict.items()
@@ -159,9 +179,9 @@ def compute_classification_scores(y, y_hat, classification_score_funcs_dict=CLAS
 
 # Merge original data with predictions
 # TODO: Make option for setting self.<...>
-def merge_original_with_missing_predictions(self, df_love_long, df_missing_long):
+def merge_filled_with_missing_predictions(df_love_long_filled: pd.DataFrame, df_missing_long: pd.DataFrame):  # -> pd.DataFrame
     love_matrix_filled_long_np = np.concatenate([
-        df_love_long.loc[:, ["Row", "Column", "Value"]].values,
+        df_love_long_filled.loc[:, ["Row", "Column", "Value"]].values,
         df_missing_long.loc[:, ["Row", "Column", "y_hat"]].values
     ])
 
@@ -181,3 +201,135 @@ def wide_to_long(df_wide, column_names=['Row', 'Column', 'Value'], drop_na=True)
         df_long = df_long.dropna()
 
     return df_long
+
+
+if __name__ == "__main__":
+
+    # Generate tindar problem
+    n = 500
+    tindar_problem = tindar.TindarGenerator(
+        n, nan_probability=0.3, generation_kind="interesting",
+        attractiveness_distr="uniform", unif_low=0.3, unif_high=0.8
+    )
+    tindar_problem.create_love_matrix()
+    love_matrix = tindar_problem.love_matrix
+
+    print(love_matrix)
+
+    # Initialize a model
+    model = SVD(n_factors=1)
+
+    # Set test size to check model performance
+    test_size = 0.2
+
+    # Initialize love predictor object
+    lovepredictor = LovePredictor(love_matrix, model, test_size)
+
+    # Load data
+    lovepredictor.pandas_data(inplace=True)
+    lovepredictor.surprise_data(inplace=True)
+
+    # Split filled part of love_matrix from nan part
+    df_love_long_filled, df_love_long_nan = lovepredictor.love_long_split(lovepredictor.df_love_long)
+    surprise_dataset_filled = lovepredictor.surprise_data(df_love_long_filled, inplace=False)
+
+    # Split the nonnull dataframe into train and test set
+    trainset, testset = lovepredictor.split_train_test(surprise_dataset_filled, inplace=False)
+
+    # Fit model
+    lovepredictor.fit(trainset=trainset)
+
+    # Predict
+    trainset_iterable = trainset.build_testset()
+
+    prediction_list_train = lovepredictor.predict(predictset=trainset_iterable)
+    prediction_list_test = lovepredictor.predict(predictset=testset)
+
+    df_train_probas = lovepredictor.surprise_predictions_to_df(prediction_list_train)
+    df_test_probas = lovepredictor.surprise_predictions_to_df(prediction_list_test)
+    print(df_train_probas.head())
+    # Check
+    # assert len(df_test_probas) + len(df_train_probas) == len(df_love_long), \
+    #    f"len(df_test_preds) + len(df_train_preds) = {len(df_test_preds) + len(df_train_preds)} "\
+    #    f"len(df_love_long) {len(df_love_long)} "\
+
+    y_hat_train = lovepredictor.round_probas(df_train_probas["probabilities"])
+    y_hat_test = lovepredictor.round_probas(df_test_probas["probabilities"])
+
+    train_preds_np = np.concatenate([df_train_probas.values, y_hat_train.values.reshape((-1, 1))], axis=1)
+    test_preds_np = np.concatenate([df_test_probas.values, y_hat_test.values.reshape((-1, 1))], axis=1)
+
+    df_train_preds = pd.DataFrame(
+        train_preds_np, index=df_train_probas.index, columns=list(df_train_probas.columns)+["y_hat"]
+    )
+    df_test_preds = pd.DataFrame(
+        test_preds_np, index=df_test_probas.index, columns=list(df_test_probas.columns)+["y_hat"]
+    )
+    print(df_test_preds.head())
+
+    # Evaluate
+    classification_scores_train = compute_classification_scores(
+        df_train_preds["y"], df_train_preds["y_hat"], CLASSIFICATION_SCORE_FUNCS_DICT
+    )
+    classification_scores_test = compute_classification_scores(
+        df_test_preds["y"], df_test_preds["y_hat"], CLASSIFICATION_SCORE_FUNCS_DICT
+    )
+
+    print("Model evaluation results:")
+    print("----------------------------")
+    print("TRAIN")
+    for k, v in classification_scores_train.items():
+        print(f"{k}: {v}")
+    print("----------------------------")
+    print("TEST")
+    for k, v in classification_scores_test.items():
+        print(f"{k}: {v}")
+
+    if classification_scores_test["roc_auc_score"] < MIN_ROC_AUC_SCORE:
+        raise Exception(f"ROC_AUC score for test set too low (should be >{MIN_ROC_AUC_SCORE}")
+
+    # Accept model and fit again
+    surprise_full_trainset = lovepredictor.surprise_dataset.build_full_trainset()
+    lovepredictor.fit(trainset=surprise_full_trainset)
+
+    # Predict the missing indices
+    missing_indices = zip(
+        df_love_long_nan["Row"].values,
+        df_love_long_nan["Column"].values,
+        df_love_long_nan["Value"].values
+    )
+
+    missing_predictions_list = lovepredictor.predict(missing_indices)
+    df_missing_probas = lovepredictor.surprise_predictions_to_df(missing_predictions_list)
+    y_hat_missing = lovepredictor.round_probas(df_missing_probas["probabilities"])
+
+    print(f"df_missing_probas.shape: {df_missing_probas.shape}")
+    print(f"len(y_hat_missing): {len(y_hat_missing)}")
+
+    missing_preds_np = np.concatenate([df_missing_probas, y_hat_missing.values.reshape((-1, 1))], axis=1)
+    df_missing_preds = pd.DataFrame(
+        missing_preds_np, index=df_missing_probas.index, columns=list(df_missing_probas.columns)+["y_hat"]
+    )
+    print(f"df_missing_preds.shape: {df_missing_preds.shape}")
+
+
+    # Merge original with prediction of missing values for final result
+    df_love_long_result = merge_filled_with_missing_predictions(
+        df_love_long_filled, df_missing_preds
+    )
+    print(f"df_love_long_result.shape: {df_love_long_result.shape}")
+    assert df_love_long_result.shape == (n**2, 3)
+
+    df_love_matrix_filled = df_love_long_result.pivot(index="Row", columns="Column", values="Value")
+    print(f"df_love_matrix_filled.shape: {df_love_matrix_filled.shape}")
+    assert df_love_matrix_filled.shape == (n, n)
+
+    love_matrix_filled = df_love_matrix_filled.values
+
+    print("Filling missing love data completed:")
+    print(love_matrix_filled)
+
+    # checks
+    assert df_love_matrix_filled.isnull().sum().sum() == 0
+    assert ((lovepredictor.df_love == df_love_matrix_filled) | lovepredictor.df_love.isnull()).all().all()
+    assert love_matrix_filled.shape == love_matrix.shape
