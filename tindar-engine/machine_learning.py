@@ -8,7 +8,11 @@ import numpy as np
 import pandas as pd
 import surprise
 from surprise import Dataset
-from surprise import AlgoBase, SVD, KNNBaseline
+from surprise import (
+    AlgoBase, NormalPredictor, BaselineOnly, KNNBasic,
+    KNNWithMeans, KNNWithZScore, KNNBaseline, SVD, SVDpp,
+    NMF, SlopeOne, CoClustering
+)
 from surprise.reader import Reader
 from surprise.model_selection import train_test_split
 from sklearn.metrics import (
@@ -159,7 +163,7 @@ class LovePredictor:
         y_hat.name = "y_hat"
         y_hat[y_hat > rating_middle] = high
         y_hat[y_hat <= rating_middle] = low
-        print(y_hat.head())
+
         return y_hat
 
     # TODO: implement to follow sklearn
@@ -203,29 +207,13 @@ def wide_to_long(df_wide, column_names=['Row', 'Column', 'Value'], drop_na=True)
     return df_long
 
 
-if __name__ == "__main__":
-
-    # Generate tindar problem
-    n = 500
-    tindar_problem = tindar.TindarGenerator(
-        n, nan_probability=0.3, generation_kind="interesting",
-        attractiveness_distr="uniform", unif_low=0.3, unif_high=0.8
-    )
-    tindar_problem.create_love_matrix()
-    love_matrix = tindar_problem.love_matrix
-
-    print(love_matrix)
-
-    # Initialize a model
-    model = SVD(n_factors=1)
-
-    # Set test size to check model performance
-    test_size = 0.2
-
-    # Initialize love predictor object
+def fill_love_matrix(love_matrix, model, test_size):
+   # Initialize love predictor object
     lovepredictor = LovePredictor(love_matrix, model, test_size)
 
     # Load data
+    print("------------------------------------")
+    print("Loading data...")
     lovepredictor.pandas_data(inplace=True)
     lovepredictor.surprise_data(inplace=True)
 
@@ -234,12 +222,19 @@ if __name__ == "__main__":
     surprise_dataset_filled = lovepredictor.surprise_data(df_love_long_filled, inplace=False)
 
     # Split the nonnull dataframe into train and test set
+    print("------------------------------------")
+    print("Splitting data into train and test to evaluate model performance...")
     trainset, testset = lovepredictor.split_train_test(surprise_dataset_filled, inplace=False)
 
     # Fit model
+    print("------------------------------------")
+    print("Fitting model...")
     lovepredictor.fit(trainset=trainset)
 
     # Predict
+    # Probabilities
+    print("------------------------------------")
+    print("Predicting...")
     trainset_iterable = trainset.build_testset()
 
     prediction_list_train = lovepredictor.predict(predictset=trainset_iterable)
@@ -247,12 +242,13 @@ if __name__ == "__main__":
 
     df_train_probas = lovepredictor.surprise_predictions_to_df(prediction_list_train)
     df_test_probas = lovepredictor.surprise_predictions_to_df(prediction_list_test)
-    print(df_train_probas.head())
-    # Check
-    # assert len(df_test_probas) + len(df_train_probas) == len(df_love_long), \
-    #    f"len(df_test_preds) + len(df_train_preds) = {len(df_test_preds) + len(df_train_preds)} "\
-    #    f"len(df_love_long) {len(df_love_long)} "\
 
+    # Check
+    assert len(df_test_probas) + len(df_train_probas) == len(df_love_long_filled), \
+       f"len(df_test_probas) + len(df_train_probas) = {len(df_test_probas) + len(df_train_probas)} "\
+       f"len(df_love_long) {len(df_love_long_filled)} "\
+
+    # Labels (0, 1)
     y_hat_train = lovepredictor.round_probas(df_train_probas["probabilities"])
     y_hat_test = lovepredictor.round_probas(df_test_probas["probabilities"])
 
@@ -265,9 +261,10 @@ if __name__ == "__main__":
     df_test_preds = pd.DataFrame(
         test_preds_np, index=df_test_probas.index, columns=list(df_test_probas.columns)+["y_hat"]
     )
-    print(df_test_preds.head())
 
     # Evaluate
+    print("------------------------------------")
+    print("Evaluating...")
     classification_scores_train = compute_classification_scores(
         df_train_preds["y"], df_train_preds["y_hat"], CLASSIFICATION_SCORE_FUNCS_DICT
     )
@@ -287,8 +284,12 @@ if __name__ == "__main__":
 
     if classification_scores_test["roc_auc_score"] < MIN_ROC_AUC_SCORE:
         raise Exception(f"ROC_AUC score for test set too low (should be >{MIN_ROC_AUC_SCORE}")
+    else:
+        print(f"Model performance test passed!")
 
     # Accept model and fit again
+    print("------------------------------------")
+    print("Repeating process on full dataset...")
     surprise_full_trainset = lovepredictor.surprise_dataset.build_full_trainset()
     lovepredictor.fit(trainset=surprise_full_trainset)
 
@@ -314,6 +315,9 @@ if __name__ == "__main__":
 
 
     # Merge original with prediction of missing values for final result
+    print("------------------------------------")
+    print("Merging original data with predictions on missing parts...")
+
     df_love_long_result = merge_filled_with_missing_predictions(
         df_love_long_filled, df_missing_preds
     )
@@ -326,10 +330,69 @@ if __name__ == "__main__":
 
     love_matrix_filled = df_love_matrix_filled.values
 
-    print("Filling missing love data completed:")
+    print("------------------------------------")
+    print("Filling missing love data completed!")
     print(love_matrix_filled)
 
     # checks
     assert df_love_matrix_filled.isnull().sum().sum() == 0
     assert ((lovepredictor.df_love == df_love_matrix_filled) | lovepredictor.df_love.isnull()).all().all()
     assert love_matrix_filled.shape == love_matrix.shape
+
+    return love_matrix_filled
+
+
+MODEL_NAME_MAPPING = {
+    "NormalPredictor": NormalPredictor,
+    "BaselineOnly": BaselineOnly,
+    "KNNBasic": KNNBasic,
+    "KNNWithMeans": KNNWithMeans,
+    "KNNWithZScore": KNNWithZScore,
+    "KNNBaseline": KNNBaseline,
+    "SVD": SVD,
+    "SVDpp": SVDpp,
+    "NMF": NMF,
+    "SlopeOne": SlopeOne,
+    "CoClustering": CoClustering
+}
+
+
+def make_model(model_name, model_hyperparameters):
+    try:
+        model = MODEL_NAME_MAPPING[model_name](**model_hyperparameters)
+    except KeyError:
+        raise KeyError(f"model_name {model_name} is not allowed. "
+                       f"choose from {list(MODEL_NAME_MAPPING.keys())}")
+    except TypeError:
+        raise TypeError(f"model_hyperparameters {model_hyperparameters} not allowed "
+                        f"for model {model_name}, check surprise documentation for model __init__")
+
+    return model
+
+
+if __name__ == "__main__":
+
+    # Generate tindar problem
+    n = 500
+    tindar_problem = tindar.TindarGenerator(
+        n, nan_probability=0.3, generation_kind="interesting",
+        attractiveness_distr="uniform", unif_low=0.3, unif_high=0.8
+    )
+    tindar_problem.create_love_matrix()
+    love_matrix = tindar_problem.love_matrix
+
+    print(love_matrix)
+
+    # Initialize a model
+    model_name = "SVD"
+    model_hyperparameters = {"n_factors": 1}
+    model = make_model(model_name, model_hyperparameters)
+
+    # Set test size to check model performance
+    test_size = 0.2
+
+    # Main script
+    try:
+        love_matrix_filled = fill_love_matrix(love_matrix, model, test_size)
+    except Exception as e:
+        print(e)
