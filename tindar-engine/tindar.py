@@ -571,6 +571,37 @@ def tindar_experiment(experiment_id="default_id",
         json.dump(results, fp)
 
 
+def ask_input_val(parameter_name, parameter_type):
+    print(f"Which {parameter_name}?")
+
+    rv_str = input()
+    try:
+        rv = parameter_type(rv_str)
+    except:
+        raise ValueError(f"Could not convert rv_i={rv_i} to {parameter_type}")
+
+    return rv
+
+
+def ask_input_list(parameter_name, parameter_type):
+    more = True
+    rv = []
+    while more:
+        rv_i = ask_input_val(parameter_name, parameter_type)
+        rv.append(rv_i)
+
+        print("More? Y/N")
+        more_str = input()
+        if more_str.lower() in ["y",  "yes"]:
+            more = True
+        elif more_str.lower() in ["n", "no"]:
+            more = False
+        else:
+            raise ValueError("Choose from Y or N")
+
+    return rv
+
+
 if __name__ == "__main__":
     print("Give this experiment an ID:")
     experiment_id = input()
@@ -591,17 +622,11 @@ if __name__ == "__main__":
         connectedness_list = [1, 3, 5, 8]
         repeat = 10
     else:
-        # TODO
-        print("NOT IMPLEMENTED YET. USING DEFAULT SPECIFIED IN SOURCECODE")
-        n_list = [10, 30, 50, 100, 200, 300, 500]
-        connectedness_list = [1, 3, 5, 8]
-        repeat = 10
-        # print("Number of Tindar people as list (e.g.) [10, 20, 30]: ")
-        # n = input()
-        # n = int(n)
+        n_list = ask_input_list("n", int)
+        connectedness_list = ask_input_list("connectedness", int)
+        repeat = ask_input_val("repeat", int)
 
-        # print("")
-
+    print("Starting Experiment...")
     tindar_experiment(experiment_id=experiment_id,
                       n_list=n_list,
                       connectedness_list=connectedness_list,
